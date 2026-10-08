@@ -2,115 +2,98 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Producto;
+use App\Http\Requests\StoreProductoRequest;
+use App\Http\Requests\UpdateProductoRequest;
 use App\Models\Categoria;
+use App\Models\Producto;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    // Permiso de Spatie que exige cada acción (si no lo tiene, responde 403)
+    public function __construct()
     {
-        $productos = Producto::with('categoria', 'proveedor')->get();
-
-        return view('productos.index', ['productos' => $productos]);
+        $this->middleware('permission:ver-productos')->only('index');
+        $this->middleware('permission:crear-productos')->only(['create', 'store']);
+        $this->middleware('permission:editar-productos')->only(['edit', 'update']);
+        $this->middleware('permission:eliminar-productos')->only(['destroy', 'restore']);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function index(Request $request)
+    {
+        // La papelera solo la ve quien puede eliminar
+        $verPapelera = $request->boolean('papelera') && $request->user()->can('eliminar-productos');
+
+        $productos = Producto::query()
+            ->with('categoria', 'proveedor')
+            ->when($verPapelera, fn ($q) => $q->onlyTrashed())
+            ->when($request->filled('buscar'), fn ($q) => $q->where('nombre', 'like', '%'.$request->string('buscar').'%'))
+            ->when($request->filled('categoria'), fn ($q) => $q->where('categoria_id', $request->integer('categoria')))
+            ->latest($verPapelera ? 'deleted_at' : 'created_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('productos.index', [
+            'productos' => $productos,
+            'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
+            'verPapelera' => $verPapelera,
+            'totalPapelera' => Producto::onlyTrashed()->count(),
+        ]);
+    }
+
     public function create()
     {
-        $categorias = Categoria::all();
-        $proveedores = Proveedor::all();
-
         return view('productos.create', [
-            'categorias' => $categorias,
-            'proveedores' => $proveedores,
+            'producto' => new Producto(),
+            'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
+            'proveedores' => Proveedor::orderBy('nombre')->get(['id', 'nombre']),
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreProductoRequest $request)
     {
-        $request->validate([
-            'nombre' => ['required', 'string', 'max:150'],
-            'categoria_id' => ['required', 'exists:categorias,id'],
-            'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'unidad_medida' => ['required', 'string', 'max:30'],
-        ]);
+        Producto::create($request->validated());
 
-        Producto::create([
-            'nombre' => $request->nombre,
-            'categoria_id' => $request->categoria_id,
-            'proveedor_id' => $request->proveedor_id,
-            'unidad_medida' => $request->unidad_medida,
-        ]);
-
-        return redirect()->route('productos.index')->with('status', 'Producto creado correctamente.');
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto creado exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Producto $producto)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $producto = Producto::findOrFail($id);
-        $categorias = Categoria::all();
-        $proveedores = Proveedor::all();
-
         return view('productos.edit', [
             'producto' => $producto,
-            'categorias' => $categorias,
-            'proveedores' => $proveedores,
+            'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
+            'proveedores' => Proveedor::orderBy('nombre')->get(['id', 'nombre']),
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(UpdateProductoRequest $request, Producto $producto)
     {
-        $request->validate([
-            'nombre' => ['required', 'string', 'max:150'],
-            'categoria_id' => ['required', 'exists:categorias,id'],
-            'proveedor_id' => ['required', 'exists:proveedores,id'],
-            'unidad_medida' => ['required', 'string', 'max:30'],
-        ]);
+        $producto->update($request->validated());
 
-        $producto = Producto::findOrFail($id);
-
-        $producto->update([
-            'nombre' => $request->nombre,
-            'categoria_id' => $request->categoria_id,
-            'proveedor_id' => $request->proveedor_id,
-            'unidad_medida' => $request->unidad_medida,
-        ]);
-
-        return redirect()->route('productos.index')->with('status', 'Producto actualizado correctamente.');
+        return redirect()->route('productos.index')
+            ->with('success', 'Producto actualizado exitosamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Soft delete: el producto va a la papelera (se llena deleted_at)
+    public function destroy(Producto $producto)
     {
-        $producto = Producto::findOrFail($id);
         $producto->delete();
 
-        return redirect()->route('productos.index')->with('status', 'Producto eliminado.');
+        return redirect()->route('productos.index')
+            ->with('success', "Producto «{$producto->nombre}» enviado a la papelera.");
+    }
+
+    public function restore(Producto $producto)
+    {
+        if ($producto->categoria?->trashed()) {
+            return back()->with('error', "Restaura primero la categoría «{$producto->categoria->nombre}».");
+        }
+
+        $producto->restore();
+
+        return redirect()->route('productos.index', ['papelera' => 1])
+            ->with('success', "Producto «{$producto->nombre}» restaurado.");
     }
 }
