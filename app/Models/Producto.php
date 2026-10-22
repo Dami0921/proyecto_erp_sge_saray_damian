@@ -23,7 +23,7 @@ class Producto extends Model
 
     public function proveedor()
     {
-        return $this->belongsTo(Proveedor::class);
+        return $this->belongsTo(Proveedor::class)->withTrashed();
     }
 
     // Stock = suma de lotes vigentes. Uso en listados: Producto::conStock()->get() y luego $p->stock

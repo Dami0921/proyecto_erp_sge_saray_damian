@@ -8,6 +8,7 @@ use App\Models\Modulo;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Services\VentaService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -16,7 +17,7 @@ class VentaController extends Controller
     // Permiso de Spatie que exige cada acción (si no lo tiene, responde 403)
     public function __construct(private VentaService $service)
     {
-        $this->middleware('permission:ver-ventas')->only(['index', 'show']);
+        $this->middleware('permission:ver-ventas')->only(['index', 'show', 'pdf']);
         $this->middleware('permission:crear-ventas')->only(['create', 'store']);
         $this->middleware('permission:eliminar-ventas')->only('destroy'); // anular
     }
@@ -86,5 +87,15 @@ class VentaController extends Controller
 
         return redirect()->route('ventas.index')
             ->with('success', "Venta {$venta->numero_factura} anulada. Stock devuelto a los lotes: {$unidades} unidades.");
+    }
+
+    // Comprobante de venta en PDF (la ven quienes pueden ver ventas; el almacenista recibe 403)
+    public function pdf(Venta $venta)
+    {
+        $venta->load(['cliente', 'usuario', 'detalles.producto', 'detalles.lote']);
+
+        return Pdf::loadView('pdf.comprobante_venta', ['venta' => $venta, 'empresa' => config('empresa')])
+            ->setPaper('letter')
+            ->stream("comprobante-{$venta->numero_factura}.pdf");
     }
 }

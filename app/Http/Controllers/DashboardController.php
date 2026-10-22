@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
+use App\Models\Compra;
 use App\Models\Cliente;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
 use App\Models\Modulo;
 use App\Models\Producto;
+use App\Models\Proveedor;
 use App\Models\Venta;
 use Illuminate\Http\Request;
 
@@ -47,9 +49,27 @@ class DashboardController extends Controller
                 'modulo' => 'clientes',
             ],
             [
+                'titulo' => 'Proveedores',
+                'descripcion' => $user->can('crear-proveedores')
+                    ? 'Administra los proveedores de la empresa.'
+                    : 'Consulta los proveedores.',
+                'ruta' => 'proveedores.index',
+                'permiso' => 'ver-proveedores',
+                'modulo' => 'proveedores',
+            ],
+            [
+                'titulo' => 'Compras',
+                'descripcion' => $user->can('crear-compras')
+                    ? 'Pide mercancía a los proveedores y registra su llegada.'
+                    : 'Consulta las órdenes de compra.',
+                'ruta' => 'compras.index',
+                'permiso' => 'ver-compras',
+                'modulo' => 'compras',
+            ],
+            [
                 'titulo' => 'Ventas',
                 'descripcion' => $user->can('crear-ventas')
-                    ? 'Registra ventas y consulta las facturas.'
+                    ? 'Registra ventas y consulta los comprobantes de venta.'
                     : 'Consulta las ventas realizadas.',
                 'ruta' => 'ventas.index',
                 'permiso' => 'ver-ventas',
@@ -88,6 +108,44 @@ class DashboardController extends Controller
             ]);
         }
 
+        // ---- Compras (Clase 10) ----
+        $mes = [now()->startOfMonth()->toDateString(), now()->endOfMonth()->toDateString()];
+        $comprasDelMes = null;
+        $reabastecer = null; // null = no se muestra la tabla
+
+        if (Modulo::activo('compras') && $user->can('ver-compras')) {
+            $comprasDelMes = Compra::where('estado', '!=', Compra::ANULADA)->whereBetween('fecha', $mes)->sum('total');
+
+            $indicadores->push(['etiqueta' => 'Compras del mes', 'valor' => '$'.number_format($comprasDelMes, 0, ',', '.')]);
+            $indicadores->push([
+                'etiqueta' => 'Órdenes por recibir',
+                'valor' => Compra::whereIn('estado', [Compra::PENDIENTE, Compra::PARCIAL])->count(),
+            ]);
+        }
+
+        if (Modulo::activo('proveedores') && $user->can('ver-proveedores')) {
+            $indicadores->push(['etiqueta' => 'Proveedores activos', 'valor' => Proveedor::count()]);
+        }
+
+        // Ventas - Compras del mes: solo para quien puede ver reportes (admin) y con ambos módulos activos
+        if (Modulo::activo('ventas') && Modulo::activo('compras') && $user->can('ver-reportes')) {
+            $ventasMes = Venta::where('estado', Venta::COMPLETADA)->whereBetween('fecha', $mes)->sum('total');
+            $comprasMes = $comprasDelMes ?? Compra::where('estado', '!=', Compra::ANULADA)->whereBetween('fecha', $mes)->sum('total');
+            $indicadores->push([
+                'etiqueta' => 'Ventas − Compras del mes',
+                'valor' => ($ventasMes - $comprasMes < 0 ? '-' : '').'$'.number_format(abs($ventasMes - $comprasMes), 0, ',', '.'),
+            ]);
+        }
+
+        // Productos para reabastecer (stock ≤ 10): tabla accionable que lleva a crear una orden de compra
+        if (Modulo::activo('compras') && Modulo::activo('inventario') && $user->can('crear-compras')) {
+            $reabastecer = Producto::conStock()->get()
+                ->filter(fn ($p) => (int) $p->stock <= 10)
+                ->sortBy('stock')
+                ->take(8)
+                ->values();
+        }
+
         $topProductos = null; // null = el usuario no puede ver ventas (la tabla no se muestra)
 
         if (Modulo::activo('ventas') && $user->can('ver-ventas')) {
@@ -124,6 +182,7 @@ class DashboardController extends Controller
             'modulos' => $modulos,
             'indicadores' => $indicadores,
             'topProductos' => $topProductos,
+            'reabastecer' => $reabastecer,
         ]);
     }
 }

@@ -148,12 +148,12 @@ class VentaService
         });
     }
 
-    // FV-00001, FV-00002... (se bloquea la última fila para que dos ventas simultáneas no repitan número)
+    // CV-00001, CV-00002... (se bloquea la última fila para que dos ventas simultáneas no repitan número)
     private function siguienteNumero(): string
     {
         $ultimo = Venta::withTrashed()->lockForUpdate()->orderByDesc('id')->value('numero_factura');
         $numero = $ultimo ? ((int) substr($ultimo, 3)) + 1 : 1;
 
-        return 'FV-'.str_pad((string) $numero, 5, '0', STR_PAD_LEFT);
+        return 'CV-'.str_pad((string) $numero, 5, '0', STR_PAD_LEFT);
     }
 }

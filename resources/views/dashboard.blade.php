@@ -60,6 +60,34 @@
                 </div>
             @endif
 
+            {{-- Reabastecer: stock bajo, con acceso directo a una nueva orden de compra --}}
+            @if ($reabastecer !== null)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold text-gray-800">Productos para reabastecer</h3>
+                        <a href="{{ route('compras.create') }}" class="text-sm text-green-700 hover:underline">Nueva orden de compra</a>
+                    </div>
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
+                                <th class="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @forelse ($reabastecer as $p)
+                                <tr>
+                                    <td class="px-3 py-2 text-sm text-gray-800">{{ $p->nombre }}</td>
+                                    <td class="px-3 py-2 text-sm text-right {{ (int) $p->stock === 0 ? 'text-red-600 font-semibold' : 'text-yellow-700' }}">{{ (int) $p->stock }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="2" class="px-3 py-4 text-center text-sm text-gray-500">Todo el inventario tiene stock suficiente.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-semibold text-gray-800 mb-2">Módulos disponibles</h3>
                 <ul class="list-disc ps-6 space-y-1 text-gray-700">

@@ -13,7 +13,7 @@
                 {{-- Errores de negocio (por ejemplo: stock insuficiente) --}}
                 @if ($errors->any())
                     <div class="mb-4 p-4 bg-red-100 text-red-800 rounded-md text-sm space-y-1">
-                        @foreach ($errors->all() as $error)
+                        @foreach (array_unique($errors->all()) as $error)
                             <p>{{ $error }}</p>
                         @endforeach
                     </div>

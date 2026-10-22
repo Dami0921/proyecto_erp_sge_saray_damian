@@ -26,7 +26,7 @@ class Venta extends Model
         'total' => 'decimal:2',
     ];
 
-    // withTrashed: la factura sigue mostrando al cliente aunque luego lo envíen a la papelera
+    // withTrashed: el comprobante sigue mostrando al cliente aunque luego lo envíen a la papelera
     public function cliente()
     {
         return $this->belongsTo(Cliente::class)->withTrashed();

@@ -32,6 +32,20 @@
                     </x-nav-link>
                     @endcan
                     @endmodulo
+                    @modulo('proveedores')
+                    @can('ver-proveedores')
+                    <x-nav-link :href="route('proveedores.index')" :active="request()->routeIs('proveedores.*')">
+                        {{ __('Proveedores') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
+                    @modulo('compras')
+                    @can('ver-compras')
+                    <x-nav-link :href="route('compras.index')" :active="request()->routeIs('compras.*')">
+                        {{ __('Compras') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
                     @modulo('ventas')
                     @can('ver-ventas')
                     <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
@@ -109,6 +123,20 @@
             @can('ver-clientes')
             <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
                 {{ __('Clientes') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @modulo('proveedores')
+            @can('ver-proveedores')
+            <x-responsive-nav-link :href="route('proveedores.index')" :active="request()->routeIs('proveedores.*')">
+                {{ __('Proveedores') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @modulo('compras')
+            @can('ver-compras')
+            <x-responsive-nav-link :href="route('compras.index')" :active="request()->routeIs('compras.*')">
+                {{ __('Compras') }}
             </x-responsive-nav-link>
             @endcan
             @endmodulo

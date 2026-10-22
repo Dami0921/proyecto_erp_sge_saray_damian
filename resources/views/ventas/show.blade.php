@@ -66,6 +66,8 @@
 
                 <div class="flex items-center gap-4 pt-2">
                     <a href="{{ route('ventas.index') }}" class="text-sm text-gray-600 hover:underline">Volver al listado</a>
+                    <a href="{{ route('ventas.pdf', $venta) }}" target="_blank" class="text-sm text-green-700 hover:underline">Descargar PDF</a>
+                    
                     @can('eliminar-ventas')
                         @unless ($venta->estaAnulada())
                             <form action="{{ route('ventas.destroy', $venta) }}" method="POST" onsubmit="return confirm('¿Anular esta venta? El stock volverá a los lotes.');">

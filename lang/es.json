@@ -1,0 +1,15 @@
+{
+    "Showing": "Mostrando",
+    "to": "a",
+    "of": "de",
+    "results": "resultados",
+    "Pagination Navigation": "Navegación de paginación",
+    "Go to page :page": "Ir a la página :page",
+    "pagination.previous": "Anterior",
+    "pagination.next": "Siguiente",
+    "Whoops! Something went wrong.": "¡Ups! Algo salió mal.",
+    "Server Error": "Error del servidor",
+    "Not Found": "No encontrado",
+    "Forbidden": "Prohibido",
+    "Page Expired": "Página expirada"
+}
