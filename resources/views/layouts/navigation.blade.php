@@ -13,6 +13,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Panel') }}
                     </x-nav-link>
+                    @modulo('inventario')
                     @can('ver-productos')
                     <x-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
                         {{ __('Productos') }}
@@ -21,6 +22,26 @@
                     @can('ver-categorias')
                     <x-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
                         {{ __('Categorías') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
+                    @modulo('clientes')
+                    @can('ver-clientes')
+                    <x-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                        {{ __('Clientes') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
+                    @modulo('ventas')
+                    @can('ver-ventas')
+                    <x-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
+                        {{ __('Ventas') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
+                    @can('gestionar-modulos')
+                    <x-nav-link :href="route('modulos.index')" :active="request()->routeIs('modulos.*')">
+                        {{ __('Módulos') }}
                     </x-nav-link>
                     @endcan
                 </div>
@@ -72,6 +93,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Panel') }}
             </x-responsive-nav-link>
+            @modulo('inventario')
             @can('ver-productos')
             <x-responsive-nav-link :href="route('productos.index')" :active="request()->routeIs('productos.*')">
                 {{ __('Productos') }}
@@ -80,6 +102,26 @@
             @can('ver-categorias')
             <x-responsive-nav-link :href="route('categorias.index')" :active="request()->routeIs('categorias.*')">
                 {{ __('Categorías') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @modulo('clientes')
+            @can('ver-clientes')
+            <x-responsive-nav-link :href="route('clientes.index')" :active="request()->routeIs('clientes.*')">
+                {{ __('Clientes') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @modulo('ventas')
+            @can('ver-ventas')
+            <x-responsive-nav-link :href="route('ventas.index')" :active="request()->routeIs('ventas.*')">
+                {{ __('Ventas') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @can('gestionar-modulos')
+            <x-responsive-nav-link :href="route('modulos.index')" :active="request()->routeIs('modulos.*')">
+                {{ __('Módulos') }}
             </x-responsive-nav-link>
             @endcan
         </div>

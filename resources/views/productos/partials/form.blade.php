@@ -15,19 +15,33 @@
     <x-input-error :messages="$errors->get('categoria_id')" class="mt-2" />
 </div>
 
+@modulo('proveedores')
 <div class="mb-4">
     <x-input-label for="proveedor_id" value="Proveedor" />
-    <select id="proveedor_id" name="proveedor_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500" required>
-        <option value="">-- Seleccione un proveedor --</option>
+    <select id="proveedor_id" name="proveedor_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500">
+        <option value="">-- Sin proveedor --</option>
         @foreach ($proveedores as $proveedor)
             <option value="{{ $proveedor->id }}" @selected(old('proveedor_id', $producto->proveedor_id) == $proveedor->id)>{{ $proveedor->nombre }}</option>
         @endforeach
     </select>
     <x-input-error :messages="$errors->get('proveedor_id')" class="mt-2" />
 </div>
+@endmodulo
 
 <div class="mb-6">
     <x-input-label for="unidad_medida" value="Unidad de medida (kg, litro, bulto, unidad...)" />
     <x-text-input id="unidad_medida" name="unidad_medida" type="text" class="mt-1 block w-full" :value="old('unidad_medida', $producto->unidad_medida)" required />
     <x-input-error :messages="$errors->get('unidad_medida')" class="mt-2" />
+</div>
+
+<div class="mb-6">
+    <x-input-label for="precio_venta" value="Precio de venta (antes de IVA)" />
+    <x-text-input id="precio_venta" name="precio_venta" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('precio_venta', $producto->precio_venta ?? 0)" required />
+    <x-input-error :messages="$errors->get('precio_venta')" class="mt-2" />
+</div>
+
+<div class="mb-6">
+    <x-input-label for="iva_porcentaje" value="IVA aplicado al vender (%) — use 0 si el producto no lleva IVA" />
+    <x-text-input id="iva_porcentaje" name="iva_porcentaje" type="number" step="0.01" min="0" max="100" class="mt-1 block w-full" :value="old('iva_porcentaje', $producto->iva_porcentaje ?? 19)" required />
+    <x-input-error :messages="$errors->get('iva_porcentaje')" class="mt-2" />
 </div>

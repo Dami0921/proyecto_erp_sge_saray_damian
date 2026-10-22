@@ -20,7 +20,12 @@ class RolePermissionSeeder extends Seeder
             'ver-proveedores', 'crear-proveedores', 'editar-proveedores', 'eliminar-proveedores',
             'ver-clientes', 'crear-clientes', 'editar-clientes', 'eliminar-clientes',
             'ver-lotes', 'crear-lotes', 'editar-lotes', 'eliminar-lotes',
+            // Ventas (eliminar-ventas = anular)
+            'ver-ventas', 'crear-ventas', 'editar-ventas', 'eliminar-ventas',
+            // Compras (eliminar-compras = anular; recibir-compras = registrar llegada de mercancía)
+            'ver-compras', 'crear-compras', 'editar-compras', 'eliminar-compras', 'recibir-compras',
             'ver-reportes',
+            'gestionar-modulos',
         ];
 
         // findOrCreate: si el permiso ya existe no lo duplica (el seeder se puede repetir)
@@ -34,13 +39,15 @@ class RolePermissionSeeder extends Seeder
         Role::findOrCreate('vendedor')->syncPermissions([
             'ver-productos',
             'ver-clientes', 'crear-clientes', 'editar-clientes',
+            'ver-ventas', 'crear-ventas',
         ]);
 
         Role::findOrCreate('almacenista')->syncPermissions([
             'ver-productos', 'crear-productos', 'editar-productos',
             'ver-categorias',
-            'ver-proveedores',
+            'ver-proveedores', 'crear-proveedores', 'editar-proveedores',
             'ver-lotes', 'crear-lotes', 'editar-lotes',
+            'ver-compras', 'crear-compras', 'recibir-compras',
         ]);
     }
 }

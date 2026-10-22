@@ -13,6 +13,19 @@ class Lote extends Model
         'fecha_vencimiento', 'cantidad_inicial', 'cantidad_actual', 'costo_unitario'
     ];
 
+    protected $casts = [
+        'fecha_ingreso' => 'date',
+        'fecha_vencimiento' => 'date',
+        'costo_unitario' => 'decimal:2',
+    ];
+
+    // Lotes que se pueden vender: con existencias y sin vencer
+    public function scopeVigentes($query)
+    {
+        return $query->where('cantidad_actual', '>', 0)
+            ->whereDate('fecha_vencimiento', '>=', today());
+    }
+
     public function producto()
     {
         return $this->belongsTo(Producto::class);

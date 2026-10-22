@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Modulo;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Directiva para las vistas: @modulo('inventario') ... @endmodulo
+        Blade::if('modulo', fn (string $clave) => Modulo::activo($clave));
     }
 }

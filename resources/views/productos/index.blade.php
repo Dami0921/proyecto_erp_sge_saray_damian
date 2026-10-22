@@ -52,8 +52,12 @@
                         <tr>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
+                            @modulo('proveedores')
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Proveedor</th>
+                            @endmodulo
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Unidad de medida</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Precio</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                         </tr>
                     </thead>
@@ -62,8 +66,12 @@
                             <tr>
                                 <td class="px-4 py-2 text-sm text-gray-800">{{ $producto->nombre }}</td>
                                 <td class="px-4 py-2 text-sm text-gray-600">{{ $producto->categoria?->nombre }}</td>
+                                @modulo('proveedores')
                                 <td class="px-4 py-2 text-sm text-gray-600">{{ $producto->proveedor?->nombre }}</td>
+                                @endmodulo
                                 <td class="px-4 py-2 text-sm text-gray-600">{{ $producto->unidad_medida }}</td>
+                                <td class="px-4 py-2 text-sm text-gray-600 text-right">${{ number_format($producto->precio_venta, 0, ',', '.') }}</td>
+                                <td class="px-4 py-2 text-sm text-right {{ (int) $producto->stock <= 0 ? 'text-red-600 font-semibold' : 'text-gray-600' }}">{{ (int) $producto->stock }}</td>
                                 <td class="px-4 py-2 text-sm">
                                     @if ($producto->trashed())
                                         <form action="{{ route('productos.restore', $producto) }}" method="POST" class="inline">
@@ -87,7 +95,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-4 text-center text-sm text-gray-500">No hay productos para mostrar.</td>
+                                <td colspan="7" class="px-4 py-4 text-center text-sm text-gray-500">No hay productos para mostrar.</td>
                             </tr>
                         @endforelse
                     </tbody>

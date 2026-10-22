@@ -11,7 +11,9 @@ class Producto extends Model
 
     protected $table = 'productos';
 
-    protected $fillable = ['nombre', 'categoria_id', 'proveedor_id', 'unidad_medida'];
+    protected $fillable = ['nombre', 'categoria_id', 'proveedor_id', 'unidad_medida', 'precio_venta', 'iva_porcentaje'];
+
+    protected $casts = ['precio_venta' => 'decimal:2', 'iva_porcentaje' => 'decimal:2'];
 
     // Aunque la categoría esté en la papelera, el producto sigue mostrándola
     public function categoria()
@@ -22,6 +24,21 @@ class Producto extends Model
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class);
+    }
+
+    // Stock = suma de lotes vigentes. Uso en listados: Producto::conStock()->get() y luego $p->stock
+    public function scopeConStock($query)
+    {
+        return $query->withSum(
+            ['lotes as stock' => fn ($q) => $q->whereDate('fecha_vencimiento', '>=', today())],
+            'cantidad_actual'
+        );
+    }
+
+    // Stock de un solo producto (consulta propia)
+    public function stockDisponible(): int
+    {
+        return (int) $this->lotes()->vigentes()->sum('cantidad_actual');
     }
 
     public function lotes()

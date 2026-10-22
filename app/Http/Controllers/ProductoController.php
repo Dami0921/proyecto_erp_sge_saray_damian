@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductoRequest;
 use App\Http\Requests\UpdateProductoRequest;
 use App\Models\Categoria;
+use App\Models\Modulo;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
@@ -26,7 +27,9 @@ class ProductoController extends Controller
         $verPapelera = $request->boolean('papelera') && $request->user()->can('eliminar-productos');
 
         $productos = Producto::query()
-            ->with('categoria', 'proveedor')
+            ->with('categoria')
+            ->conStock()
+            ->when(Modulo::activo('proveedores'), fn ($q) => $q->with('proveedor'))
             ->when($verPapelera, fn ($q) => $q->onlyTrashed())
             ->when($request->filled('buscar'), fn ($q) => $q->where('nombre', 'like', '%'.$request->string('buscar').'%'))
             ->when($request->filled('categoria'), fn ($q) => $q->where('categoria_id', $request->integer('categoria')))
@@ -47,7 +50,7 @@ class ProductoController extends Controller
         return view('productos.create', [
             'producto' => new Producto(),
             'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
-            'proveedores' => Proveedor::orderBy('nombre')->get(['id', 'nombre']),
+            'proveedores' => $this->proveedores(),
         ]);
     }
 
@@ -64,7 +67,7 @@ class ProductoController extends Controller
         return view('productos.edit', [
             'producto' => $producto,
             'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
-            'proveedores' => Proveedor::orderBy('nombre')->get(['id', 'nombre']),
+            'proveedores' => $this->proveedores(),
         ]);
     }
 
@@ -95,5 +98,13 @@ class ProductoController extends Controller
 
         return redirect()->route('productos.index', ['papelera' => 1])
             ->with('success', "Producto «{$producto->nombre}» restaurado.");
+    }
+
+    // Sin el módulo Proveedores activo no se consulta esa tabla
+    private function proveedores()
+    {
+        return Modulo::activo('proveedores')
+            ? Proveedor::orderBy('nombre')->get(['id', 'nombre'])
+            : collect();
     }
 }

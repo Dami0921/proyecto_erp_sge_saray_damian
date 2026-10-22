@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('modulos', function (Blueprint $table) {
+            $table->id();
+            $table->string('clave', 50)->unique();   // identificador interno: 'inventario', 'clientes', ...
+            $table->string('nombre', 100);           // nombre que ve el usuario
+            $table->boolean('activo')->default(true);
+            $table->boolean('es_nucleo')->default(false); // true = no se puede apagar
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('modulos');
+    }
+};

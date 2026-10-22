@@ -19,8 +19,12 @@ class StoreProductoRequest extends FormRequest
             'nombre' => ['required', 'string', 'max:150'],
             // La categoría debe existir y NO estar en la papelera
             'categoria_id' => ['required', Rule::exists('categorias', 'id')->whereNull('deleted_at')],
-            'proveedor_id' => ['required', 'exists:proveedores,id'],
+            // Opcional: Productos no depende del módulo Proveedores
+            'proveedor_id' => ['nullable', 'exists:proveedores,id'],
             'unidad_medida' => ['required', 'string', 'max:30'],
+            'precio_venta' => ['required', 'numeric', 'min:0', 'max:99999999'],
+            // 0 = el producto no lleva IVA
+            'iva_porcentaje' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }
 
@@ -31,6 +35,8 @@ class StoreProductoRequest extends FormRequest
             'categoria_id' => 'categoría',
             'proveedor_id' => 'proveedor',
             'unidad_medida' => 'unidad de medida',
+            'precio_venta' => 'precio de venta',
+            'iva_porcentaje' => 'porcentaje de IVA',
         ];
     }
 }
