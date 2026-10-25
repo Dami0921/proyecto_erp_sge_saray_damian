@@ -1,0 +1,95 @@
+erDiagram
+    CATEGORIAS ||--o{ PRODUCTOS : clasifica
+    PROVEEDORES |o--o{ PRODUCTOS : suministra
+    PRODUCTOS ||--o{ LOTES : tiene
+    PROVEEDORES |o--o{ COMPRAS : recibe
+    USERS ||--o{ COMPRAS : registra
+    COMPRAS ||--|{ DETALLE_COMPRAS : contiene
+    PRODUCTOS ||--o{ DETALLE_COMPRAS : "se pide en"
+    DETALLE_COMPRAS ||--o{ LOTES : "origina (recepcion)"
+    CLIENTES |o--o{ VENTAS : realiza
+    USERS ||--o{ VENTAS : registra
+    VENTAS ||--|{ DETALLE_VENTAS : contiene
+    LOTES ||--o{ DETALLE_VENTAS : "se descuenta de"
+    PRODUCTOS ||--o{ DETALLE_VENTAS : "se vende en"
+    USERS ||--o{ MODEL_HAS_ROLES : "tiene roles"
+    ROLES ||--o{ MODEL_HAS_ROLES : asigna
+    USERS ||--o{ MODEL_HAS_PERMISSIONS : "permisos directos"
+    PERMISSIONS ||--o{ MODEL_HAS_PERMISSIONS : otorga
+    ROLES ||--o{ ROLE_HAS_PERMISSIONS : agrupa
+    PERMISSIONS ||--o{ ROLE_HAS_PERMISSIONS : incluye
+
+    CATEGORIAS { bigint id PK
+        varchar nombre }
+    PROVEEDORES { bigint id PK
+        varchar nombre
+        varchar nit
+        varchar telefono
+        varchar direccion
+        timestamp deleted_at }
+    PRODUCTOS { bigint id PK
+        varchar nombre
+        bigint categoria_id FK
+        bigint proveedor_id FK
+        varchar unidad_medida
+        decimal precio_venta
+        decimal iva_porcentaje }
+    LOTES { bigint id PK
+        bigint producto_id FK
+        bigint detalle_compra_id FK
+        varchar numero_lote
+        date fecha_vencimiento
+        int cantidad_inicial
+        int cantidad_actual
+        decimal costo_unitario }
+    CLIENTES { bigint id PK
+        varchar nombre
+        varchar tipo_cliente
+        varchar documento
+        varchar municipio
+        timestamp deleted_at }
+    VENTAS { bigint id PK
+        varchar numero_factura UK
+        bigint cliente_id FK
+        bigint user_id FK
+        date fecha
+        decimal subtotal
+        decimal iva
+        decimal total
+        varchar estado
+        timestamp deleted_at }
+    DETALLE_VENTAS { bigint id PK
+        bigint venta_id FK
+        bigint lote_id FK
+        bigint producto_id FK
+        int cantidad
+        decimal precio_unitario
+        decimal subtotal }
+    COMPRAS { bigint id PK
+        varchar numero_orden UK
+        bigint proveedor_id FK
+        bigint user_id FK
+        date fecha
+        decimal total
+        varchar estado
+        timestamp deleted_at }
+    DETALLE_COMPRAS { bigint id PK
+        bigint compra_id FK
+        bigint producto_id FK
+        int cantidad
+        int cantidad_recibida
+        decimal costo_unitario }
+    USERS { bigint id PK
+        varchar name
+        varchar email UK
+        timestamp deleted_at }
+    ROLES { bigint id PK
+        varchar name }
+    PERMISSIONS { bigint id PK
+        varchar name }
+    MODEL_HAS_ROLES { bigint role_id FK
+        bigint model_id FK }
+    MODEL_HAS_PERMISSIONS { bigint permission_id FK
+        bigint model_id FK }
+    ROLE_HAS_PERMISSIONS { bigint permission_id FK
+        bigint role_id FK }

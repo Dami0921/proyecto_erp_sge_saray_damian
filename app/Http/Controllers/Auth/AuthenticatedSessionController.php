@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,6 +29,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        // El rol activo se elige en CADA inicio de sesión (nunca se hereda de una sesión anterior).
+        // Si el usuario tiene varios roles, el middleware rol.activo lo lleva a la pantalla de selección.
+        $request->session()->forget(User::SESION_ROL_ACTIVO);
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }

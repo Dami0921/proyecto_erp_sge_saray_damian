@@ -5,11 +5,11 @@
                 <div class="shrink-0 flex items-center gap-2">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
                         <x-application-logo class="block h-9 w-9" />
-                        <span class="font-semibold text-green-800 hidden sm:inline">AgroInsumos El Cultivador</span>
+                        <span class="font-semibold text-green-800 hidden xl:inline">AgroInsumos El Cultivador</span>
                     </a>
                 </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-5 sm:-my-px sm:ms-6 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Panel') }}
                     </x-nav-link>
@@ -53,11 +53,11 @@
                     </x-nav-link>
                     @endcan
                     @endmodulo
-                    @can('gestionar-modulos')
-                    <x-nav-link :href="route('modulos.index')" :active="request()->routeIs('modulos.*')">
-                        {{ __('Módulos') }}
+                    @canany(['gestionar-usuarios', 'gestionar-roles', 'gestionar-modulos'])
+                    <x-nav-link :href="route('configuracion.index')" :active="request()->routeIs('configuracion.*') || request()->routeIs('modulos.*')">
+                        {{ __('Configuración') }}
                     </x-nav-link>
-                    @endcan
+                    @endcanany
                 </div>
             </div>
 
@@ -75,6 +75,14 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        @if (Auth::user()->roles->count() > 1)
+                            <div class="px-4 py-2 text-xs text-gray-500">
+                                Rol activo: <span class="font-semibold text-green-800">{{ Auth::user()->rolActivo() ?? '—' }}</span>
+                            </div>
+                            <x-dropdown-link :href="route('rol.seleccionar')">
+                                {{ __('Cambiar de rol') }}
+                            </x-dropdown-link>
+                        @endif
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Perfil') }}
                         </x-dropdown-link>
@@ -147,11 +155,11 @@
             </x-responsive-nav-link>
             @endcan
             @endmodulo
-            @can('gestionar-modulos')
-            <x-responsive-nav-link :href="route('modulos.index')" :active="request()->routeIs('modulos.*')">
-                {{ __('Módulos') }}
+            @canany(['gestionar-usuarios', 'gestionar-roles', 'gestionar-modulos'])
+            <x-responsive-nav-link :href="route('configuracion.index')" :active="request()->routeIs('configuracion.*') || request()->routeIs('modulos.*')">
+                {{ __('Configuración') }}
             </x-responsive-nav-link>
-            @endcan
+            @endcanany
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200">
@@ -161,6 +169,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                @if (Auth::user()->roles->count() > 1)
+                    <x-responsive-nav-link :href="route('rol.seleccionar')">
+                        {{ __('Cambiar de rol') }} ({{ Auth::user()->rolActivo() ?? '—' }})
+                    </x-responsive-nav-link>
+                @endif
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Perfil') }}
                 </x-responsive-nav-link>

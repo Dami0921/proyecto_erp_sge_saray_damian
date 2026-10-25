@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\Configuracion\ConfiguracionController;
+use App\Http\Controllers\Configuracion\RolController;
+use App\Http\Controllers\Configuracion\UsuarioController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ModuloController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\RolActivoController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,14 +19,37 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Rol activo: un usuario con varios roles elige con cuál trabaja (solo requiere estar autenticado)
+Route::middleware('auth')->group(function () {
+    Route::get('rol-activo', [RolActivoController::class, 'create'])->name('rol.seleccionar');
+    Route::post('rol-activo', [RolActivoController::class, 'store'])->name('rol.cambiar');
+});
+
 Route::get('/dashboard', DashboardController::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'rol.activo', 'verified'])
     ->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'rol.activo'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // CONFIGURACIÓN (NÚCLEO: nunca depende de un módulo apagado). Cada sección exige su propio permiso.
+    Route::get('configuracion', ConfiguracionController::class)
+        ->middleware('permission:gestionar-usuarios|gestionar-roles|gestionar-modulos')
+        ->name('configuracion.index');
+
+    Route::prefix('configuracion')->name('configuracion.')->group(function () {
+        Route::patch('usuarios/{usuario}/restore', [UsuarioController::class, 'restore'])
+            ->withTrashed()
+            ->name('usuarios.restore');
+        Route::resource('usuarios', UsuarioController::class)->except('show');
+
+        Route::get('roles', [RolController::class, 'index'])->name('roles.index');
+        Route::put('roles', [RolController::class, 'update'])->name('roles.update');
+        Route::post('roles', [RolController::class, 'store'])->name('roles.store');
+        Route::delete('roles/{rol}', [RolController::class, 'destroy'])->name('roles.destroy');
+    });
 
     // Panel de módulos (NÚCLEO: nunca depende de un módulo apagado)
     Route::middleware('permission:gestionar-modulos')->group(function () {

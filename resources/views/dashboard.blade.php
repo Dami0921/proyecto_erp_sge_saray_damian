@@ -8,12 +8,27 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            @if (session('success'))
+                <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md">{{ session('success') }}</div>
+            @endif
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <p>AgroInsumos El Cultivador S.A.S. - Panel de control</p>
                     <p class="text-sm text-gray-600 mt-1">
-                        Rol: {{ $roles->isNotEmpty() ? $roles->join(', ') : 'Sin rol asignado' }}
+                        @if ($roles->count() > 1)
+                            Rol activo: <strong class="text-green-800">{{ $rolActivo }}</strong>
+                            <span class="text-gray-400">(tienes también: {{ $roles->reject(fn ($r) => $r === $rolActivo)->join(', ') }})</span>
+                            · <a href="{{ route('rol.seleccionar') }}" class="text-green-700 hover:underline">cambiar de rol</a>
+                        @else
+                            Rol: {{ $roles->isNotEmpty() ? $roles->join(', ') : 'Sin rol asignado' }}
+                        @endif
                     </p>
+                    @if ($roles->isEmpty())
+                        <p class="mt-3 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-sm px-3 py-2">
+                            Tu cuenta aún no tiene un rol. Un administrador debe asignártelo en Configuración para que puedas trabajar.
+                        </p>
+                    @endif
                 </div>
             </div>
 

@@ -25,7 +25,8 @@ class RolePermissionSeeder extends Seeder
             // Compras (eliminar-compras = anular; recibir-compras = registrar llegada de mercancía)
             'ver-compras', 'crear-compras', 'editar-compras', 'eliminar-compras', 'recibir-compras',
             'ver-reportes',
-            'gestionar-modulos',
+            // Configuración: módulos del sistema, usuarios (con roles y permisos directos) y matriz de roles
+            'gestionar-modulos', 'gestionar-usuarios', 'gestionar-roles',
         ];
 
         // findOrCreate: si el permiso ya existe no lo duplica (el seeder se puede repetir)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\SeguridadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,14 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Regla de protección: el único administrador no puede eliminar su cuenta (nadie podría administrar el sistema)
+        if (app(SeguridadService::class)->esUnicoAdministrador($user)) {
+            return back()->withErrors(
+                ['password' => 'No puedes eliminar tu cuenta: eres el único administrador del sistema.'],
+                'userDeletion'
+            );
+        }
 
         Auth::logout();
 

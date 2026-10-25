@@ -179,6 +179,7 @@ class DashboardController extends Controller
         return view('dashboard', [
             'user' => $user,
             'roles' => $user->getRoleNames(),
+            'rolActivo' => $user->rolActivo(),
             'modulos' => $modulos,
             'indicadores' => $indicadores,
             'topProductos' => $topProductos,
