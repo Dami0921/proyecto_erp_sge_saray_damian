@@ -8,6 +8,7 @@ use App\Http\Controllers\Configuracion\RolController;
 use App\Http\Controllers\Configuracion\UsuarioController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ModuloController;
 use App\Http\Controllers\ProductoController;
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
     // Módulo VENTAS (depende de Inventario): si alguno está apagado, estas rutas responden 404
     Route::middleware('modulo:ventas')->group(function () {
         // La venta anulada queda con soft delete, pero se sigue pudiendo consultar (withTrashed)
+        Route::get('ventas/exportar', [ExcelController::class, 'exportarVentas'])->name('ventas.exportar');
         Route::get('ventas/{venta}/pdf', [VentaController::class, 'pdf'])->withTrashed()->name('ventas.pdf');
         Route::resource('ventas', VentaController::class)
             ->only(['index', 'create', 'store', 'show', 'destroy'])
@@ -106,6 +108,11 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
     Route::middleware('modulo:inventario')->group(function () {
         // Productos (los permisos se validan dentro del controlador)
         // La ruta restore va antes del resource y usa withTrashed() para encontrar registros en la papelera
+        // Excel (Clase 13): exportar el catálogo e importar productos con validación por fila
+        Route::get('productos/exportar', [ExcelController::class, 'exportarProductos'])->name('productos.exportar');
+        Route::get('productos/plantilla', [ExcelController::class, 'plantilla'])->name('productos.plantilla');
+        Route::get('productos/importar', [ExcelController::class, 'formularioImportar'])->name('productos.importar');
+        Route::post('productos/importar', [ExcelController::class, 'importar'])->name('productos.importar.guardar');
         Route::patch('productos/{producto}/restore', [ProductoController::class, 'restore'])
             ->withTrashed()
             ->name('productos.restore');

@@ -27,6 +27,12 @@
                                 <a href="{{ route('productos.index', ['papelera' => 1]) }}" class="text-sm text-green-700 hover:underline">Ver papelera ({{ $totalPapelera }})</a>
                             @endif
                         @endcan
+                        @can('exportar-productos')
+                            <a href="{{ route('productos.exportar', request()->only('buscar')) }}" class="text-sm text-green-700 hover:underline">Exportar a Excel</a>
+                        @endcan
+                        @can('importar-productos')
+                            <a href="{{ route('productos.importar') }}" class="text-sm text-green-700 hover:underline">Importar desde Excel</a>
+                        @endcan
                         @can('crear-productos')
                             <a href="{{ route('productos.create') }}" class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800">Nuevo producto</a>
                         @endcan

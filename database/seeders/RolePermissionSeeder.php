@@ -27,6 +27,8 @@ class RolePermissionSeeder extends Seeder
             'ver-reportes',
             // Clase 12: kardex (ajustar = corregir existencias con motivo) y bitácora de auditoría
             'ver-kardex', 'ajustar-kardex', 'ver-auditoria',
+            // Clase 13: intercambio con Excel
+            'exportar-productos', 'importar-productos', 'exportar-ventas',
             // Configuración: módulos del sistema, usuarios (con roles y permisos directos) y matriz de roles
             'gestionar-modulos', 'gestionar-usuarios', 'gestionar-roles',
         ];
@@ -52,6 +54,7 @@ class RolePermissionSeeder extends Seeder
             'ver-lotes', 'crear-lotes', 'editar-lotes',
             'ver-compras', 'crear-compras', 'recibir-compras',
             'ver-kardex', 'ajustar-kardex',
+            'exportar-productos', 'importar-productos',
         ]);
     }
 }

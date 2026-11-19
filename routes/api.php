@@ -1,19 +1,34 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LoteController;
+use App\Http\Controllers\Api\ProductoController;
+use App\Http\Controllers\Api\VentaController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API REST del ERP (Clase 13). Todas las rutas quedan bajo /api/v1/...
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
+| Versionar la API (v1) permite cambiarla en el futuro sin romper las apps que ya la usan.
+| Los permisos son los mismos de la web (Spatie), calculados con el ROL ACTIVO guardado en el token.
 */
+Route::prefix('v1')->group(function () {
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    // Pública: máximo 5 intentos de login por minuto por IP
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+
+    // Protegidas con token Bearer de Sanctum (60 peticiones por minuto, límite del grupo «api»)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('me', [AuthController::class, 'me']);
+        Route::post('logout', [AuthController::class, 'logout']);
+
+        Route::get('productos', [ProductoController::class, 'index']);
+        Route::get('productos/{producto}', [ProductoController::class, 'show']);
+
+        Route::get('lotes/por-vencer', [LoteController::class, 'porVencer']);
+
+        Route::get('ventas/{venta}', [VentaController::class, 'show'])->withTrashed();
+        Route::post('ventas', [VentaController::class, 'store']);
+    });
 });

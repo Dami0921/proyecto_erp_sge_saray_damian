@@ -17,9 +17,14 @@
 
                 <div class="flex flex-wrap justify-between items-center gap-3">
                     <h3 class="text-lg font-semibold text-gray-800">Listado de ventas</h3>
+                    <div class="flex items-center gap-4">
+                    @can('exportar-ventas')
+                        <a href="{{ route('ventas.exportar', request()->only('desde', 'hasta')) }}" class="text-sm text-green-700 hover:underline">Exportar a Excel</a>
+                    @endcan
                     @can('crear-ventas')
                         <a href="{{ route('ventas.create') }}" class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800">Nueva venta</a>
                     @endcan
+                    </div>
                 </div>
 
                 <form method="GET" action="{{ route('ventas.index') }}" class="flex flex-wrap gap-2">
@@ -29,6 +34,8 @@
                         <option value="completada" @selected(request('estado') === 'completada')>Completada</option>
                         <option value="anulada" @selected(request('estado') === 'anulada')>Anulada</option>
                     </select>
+                    <input type="date" name="desde" value="{{ request('desde') }}" title="Desde" class="border-gray-300 rounded-md shadow-sm text-sm">
+                    <input type="date" name="hasta" value="{{ request('hasta') }}" title="Hasta" class="border-gray-300 rounded-md shadow-sm text-sm">
                     <x-primary-button>Filtrar</x-primary-button>
                 </form>
 

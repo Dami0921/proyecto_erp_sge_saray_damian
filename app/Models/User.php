@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -63,9 +64,34 @@ class User extends Authenticatable
      */
     public function usaRolActivo(): bool
     {
-        return auth()->check()
-            && auth()->id() === $this->getKey()
-            && $this->roles->count() > 1;
+        if ($this->roles->count() <= 1) {
+            return false;
+        }
+
+        // API (Clase 13): un token con habilidad «rol:...» trabaja con ese rol
+        if ($this->rolDelToken() !== null) {
+            return true;
+        }
+
+        return auth()->check() && auth()->id() === $this->getKey();
+    }
+
+    /** Rol con el que se emitió el token de la petición actual (habilidad «rol:vendedor»), o null. */
+    public function rolDelToken(): ?string
+    {
+        $token = $this->currentAccessToken();
+
+        if (! $token instanceof PersonalAccessToken) {
+            return null;
+        }
+
+        foreach ($token->abilities ?? [] as $habilidad) {
+            if (str_starts_with($habilidad, 'rol:')) {
+                return substr($habilidad, 4);
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -77,6 +103,12 @@ class User extends Authenticatable
     {
         if ($this->roles->count() === 1) {
             return $this->roles->first()->name;
+        }
+
+        // API: el rol viene en el token, no en la sesión
+        $delToken = $this->rolDelToken();
+        if ($delToken !== null) {
+            return $this->roles->contains('name', $delToken) ? $delToken : null;
         }
 
         $elegido = request()->hasSession() ? request()->session()->get(self::SESION_ROL_ACTIVO) : null;

@@ -34,6 +34,8 @@ class CatalogoPermisos
         'eliminar' => 'Eliminar / anular',
         'recibir' => 'Recibir mercancía',
         'ajustar' => 'Ajustar',
+        'exportar' => 'Exportar',
+        'importar' => 'Importar',
         'gestionar' => 'Gestionar',
     ];
 

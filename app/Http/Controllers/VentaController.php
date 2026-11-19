@@ -28,6 +28,8 @@ class VentaController extends Controller
             ->with(['cliente', 'usuario'])
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->string('estado')))
             ->when($request->filled('buscar'), fn ($q) => $q->where('numero_factura', 'like', '%'.$request->string('buscar').'%'))
+            ->when($request->filled('desde'), fn ($q) => $q->whereDate('fecha', '>=', $request->input('desde')))
+            ->when($request->filled('hasta'), fn ($q) => $q->whereDate('fecha', '<=', $request->input('hasta')))
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
