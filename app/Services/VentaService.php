@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\VentaRegistrada;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
 use App\Models\Producto;
@@ -119,6 +120,9 @@ class VentaService
 
                 $this->inventario->salida($linea['lote'], $linea['cantidad'], 'venta', $venta, $linea['precio_unitario']);
             }
+
+            // Se avisa DESPUÉS del commit (ShouldDispatchAfterCommit): si algo falla antes, no sale ninguna alerta
+            VentaRegistrada::dispatch($venta);
 
             return $venta;
         });

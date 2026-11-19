@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CompraRecibida;
 use App\Models\Compra;
 use App\Models\DetalleCompra;
 use App\Models\Producto;
@@ -154,6 +155,8 @@ class CompraService
                 'estado' => $faltante ? Compra::PARCIAL : Compra::RECIBIDA,
                 'recibida_at' => $faltante ? null : now(),
             ]);
+
+            CompraRecibida::dispatch($compra, ! $faltante);
 
             return $compra;
         });

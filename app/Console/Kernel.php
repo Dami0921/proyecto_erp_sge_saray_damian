@@ -12,7 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Cada día a las 07:00 (hora de Bogotá): aviso de lotes que vencen pronto
+        $schedule->command('erp:lotes-por-vencer')
+            ->dailyAt(config('erp.revision_vencimientos_a_las'))
+            ->timezone('America/Bogota')
+            ->withoutOverlapping();
+
+        // Mantenimiento: la bitácora de auditoría conserva solo lo que define config/activitylog.php
+        $schedule->command('activitylog:clean')->monthly()->timezone('America/Bogota');
     }
 
     /**
