@@ -44,7 +44,7 @@ class UsuarioController extends Controller
 
     public function create()
     {
-        return view('configuracion.usuarios.create', $this->datosFormulario(new User()));
+        return view('configuracion.usuarios.create', $this->datosFormulario(new User));
     }
 
     public function store(StoreUsuarioRequest $request)

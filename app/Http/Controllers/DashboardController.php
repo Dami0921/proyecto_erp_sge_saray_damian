@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categoria;
-use App\Models\Compra;
 use App\Models\Cliente;
+use App\Models\Compra;
 use App\Models\DetalleVenta;
 use App\Models\Lote;
 use App\Models\Modulo;

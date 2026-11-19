@@ -15,9 +15,7 @@ class CompraRecibidaNotification extends Notification implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Compra $compra, public bool $completa)
-    {
-    }
+    public function __construct(public Compra $compra, public bool $completa) {}
 
     public function via(object $notifiable): array
     {

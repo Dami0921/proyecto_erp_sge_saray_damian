@@ -48,7 +48,7 @@ class ProductoController extends Controller
     public function create()
     {
         return view('productos.create', [
-            'producto' => new Producto(),
+            'producto' => new Producto,
             'categorias' => Categoria::orderBy('nombre')->get(['id', 'nombre']),
             'proveedores' => $this->proveedores(),
         ]);

@@ -13,16 +13,14 @@ use Illuminate\Validation\ValidationException;
 class CompraService
 {
     // Clase 12: los lotes nuevos y el stock pasan por el InventarioService (kardex)
-    public function __construct(private InventarioService $inventario)
-    {
-    }
+    public function __construct(private InventarioService $inventario) {}
 
     /**
      * Registra una ORDEN DE COMPRA (estado "pendiente"). NO mueve el inventario:
      * el stock solo aumenta cuando la mercancía llega (método recibir).
      *
-     * @param array $data ['proveedor_id' => ?int, 'fecha' => 'Y-m-d', 'observaciones' => ?string,
-     *                     'items' => [['producto_id' => int, 'cantidad' => int, 'costo_unitario' => float], ...]]
+     * @param  array  $data  ['proveedor_id' => ?int, 'fecha' => 'Y-m-d', 'observaciones' => ?string,
+     *                       'items' => [['producto_id' => int, 'cantidad' => int, 'costo_unitario' => float], ...]]
      */
     public function registrar(array $data, int $userId): Compra
     {
@@ -77,7 +75,7 @@ class CompraService
      * Registra la llegada (total o parcial) de mercancía. Cada línea recibida crea un LOTE NUEVO
      * y aumenta el stock. Todo dentro de una transacción.
      *
-     * @param array $recepcion [detalle_id => ['cantidad' => int, 'fecha_vencimiento' => 'Y-m-d', 'numero_lote' => ?string]]
+     * @param  array  $recepcion  [detalle_id => ['cantidad' => int, 'fecha_vencimiento' => 'Y-m-d', 'numero_lote' => ?string]]
      */
     public function recibir(Compra $compra, array $recepcion): Compra
     {

@@ -25,7 +25,7 @@ class SeguridadService
     // ------------------------------------------------------------------ Usuarios
 
     /**
-     * @param array $data ['name','email','password','roles' => [nombres], 'permisos' => [nombres]]
+     * @param  array  $data  ['name','email','password','roles' => [nombres], 'permisos' => [nombres]]
      */
     public function crearUsuario(array $data): User
     {
@@ -49,7 +49,7 @@ class SeguridadService
     }
 
     /**
-     * @param array $data ['name','email','password'?,'roles' => [nombres], 'permisos' => [nombres]]
+     * @param  array  $data  ['name','email','password'?,'roles' => [nombres], 'permisos' => [nombres]]
      */
     public function actualizarUsuario(User $user, array $data, User $actor): User
     {
@@ -127,7 +127,7 @@ class SeguridadService
     /**
      * Guarda la matriz completa de permisos por rol.
      *
-     * @param array $matriz [rol_id => [nombres de permiso]]
+     * @param  array  $matriz  [rol_id => [nombres de permiso]]
      */
     public function actualizarMatriz(array $matriz): void
     {

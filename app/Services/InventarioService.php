@@ -20,7 +20,7 @@ class InventarioService
     /**
      * Nace un lote nuevo con su cantidad (recepción de una compra, inventario inicial) y queda en el kardex.
      *
-     * @param array $datosLote campos de Lote; 'cantidad_actual' debe ser la cantidad que ingresa
+     * @param  array  $datosLote  campos de Lote; 'cantidad_actual' debe ser la cantidad que ingresa
      */
     public function ingresarLote(array $datosLote, string $concepto, ?Model $referencia = null, ?string $observaciones = null): MovimientoInventario
     {

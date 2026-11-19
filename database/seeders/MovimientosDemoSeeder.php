@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cliente;
 use App\Models\Compra;
 use App\Models\Producto;
 use App\Models\Proveedor;
@@ -63,7 +64,7 @@ class MovimientosDemoSeeder extends Seeder
         ], $admin->id);
 
         // --- Ventas --------------------------------------------------------
-        $clientes = \App\Models\Cliente::orderBy('id')->get();
+        $clientes = Cliente::orderBy('id')->get();
         $vender = fn (int $cli, array $items) => $ventas->registrar([
             'cliente_id' => $clientes[$cli]->id, 'fecha' => today()->toDateString(),
             'items' => collect($items)->map(fn ($c, $n) => ['producto_id' => $p[$n]->id, 'cantidad' => $c])->values()->all(),

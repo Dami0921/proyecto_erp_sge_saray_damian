@@ -17,9 +17,7 @@ class StockBajoNotification extends Notification implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public Producto $producto, public int $stock)
-    {
-    }
+    public function __construct(public Producto $producto, public int $stock) {}
 
     // Canales: correo + tabla notifications (campana)
     public function via(object $notifiable): array

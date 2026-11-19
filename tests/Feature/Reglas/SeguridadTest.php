@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\SeguridadService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\Concerns\PreparaEntorno;
 use Tests\TestCase;
@@ -125,7 +126,7 @@ class SeguridadTest extends TestCase
     {
         $vendedor = Role::findByName('vendedor');
         $admin = Role::findByName('admin');
-        $totalPermisos = \Spatie\Permission\Models\Permission::count();
+        $totalPermisos = Permission::count();
 
         $this->actingAs($this->admin)->put(route('configuracion.roles.update'), [
             'permisos' => [

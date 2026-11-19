@@ -39,7 +39,7 @@ class CategoriaController extends Controller
 
     public function create()
     {
-        return view('categorias.create', ['categoria' => new Categoria()]);
+        return view('categorias.create', ['categoria' => new Categoria]);
     }
 
     public function store(StoreCategoriaRequest $request)

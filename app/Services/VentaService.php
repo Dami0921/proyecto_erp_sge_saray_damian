@@ -13,15 +13,13 @@ use Illuminate\Validation\ValidationException;
 class VentaService
 {
     // Clase 12: las existencias SOLO cambian a través del InventarioService (kardex)
-    public function __construct(private InventarioService $inventario)
-    {
-    }
+    public function __construct(private InventarioService $inventario) {}
 
     /**
      * Registra una venta completa dentro de una transacción: si algo falla, no se guarda nada.
      *
-     * @param array $data ['cliente_id' => ?int, 'fecha' => 'Y-m-d', 'observaciones' => ?string,
-     *                     'items' => [['producto_id' => int, 'cantidad' => int], ...]]
+     * @param  array  $data  ['cliente_id' => ?int, 'fecha' => 'Y-m-d', 'observaciones' => ?string,
+     *                       'items' => [['producto_id' => int, 'cantidad' => int], ...]]
      */
     public function registrar(array $data, int $userId): Venta
     {

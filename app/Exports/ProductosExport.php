@@ -17,9 +17,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  */
 class ProductosExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
-    public function __construct(private ?string $buscar = null)
-    {
-    }
+    public function __construct(private ?string $buscar = null) {}
 
     public function query(): Builder
     {

@@ -42,7 +42,7 @@ class ProveedorController extends Controller
 
     public function create()
     {
-        return view('proveedores.create', ['proveedor' => new Proveedor()]);
+        return view('proveedores.create', ['proveedor' => new Proveedor]);
     }
 
     public function store(StoreProveedorRequest $request)

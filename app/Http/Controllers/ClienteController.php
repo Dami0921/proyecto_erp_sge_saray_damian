@@ -45,7 +45,7 @@ class ClienteController extends Controller
     public function create()
     {
         return view('clientes.create', [
-            'cliente' => new Cliente(),
+            'cliente' => new Cliente,
             'tipos' => Cliente::TIPOS,
         ]);
     }

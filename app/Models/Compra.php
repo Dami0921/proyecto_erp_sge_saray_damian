@@ -14,8 +14,11 @@ class Compra extends Model
     protected string $auditLog = 'compras';
 
     public const PENDIENTE = 'pendiente';
+
     public const PARCIAL = 'parcial';
+
     public const RECIBIDA = 'recibida';
+
     public const ANULADA = 'anulada';
 
     protected $table = 'compras';

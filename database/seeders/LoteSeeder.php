@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Producto;
 use App\Services\InventarioService;
+use Illuminate\Database\Seeder;
 
 class LoteSeeder extends Seeder
 {
@@ -15,7 +15,7 @@ class LoteSeeder extends Seeder
         foreach ($productos as $producto) {
             $inventario->ingresarLote([
                 'producto_id' => $producto->id,
-                'numero_lote' => 'L-' . str_pad($producto->id, 4, '0', STR_PAD_LEFT),
+                'numero_lote' => 'L-'.str_pad($producto->id, 4, '0', STR_PAD_LEFT),
                 'fecha_ingreso' => now()->subDays(10),
                 'fecha_vencimiento' => now()->addMonths(6),
                 'cantidad_inicial' => 100,

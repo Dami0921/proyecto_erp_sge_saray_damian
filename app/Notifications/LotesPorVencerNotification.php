@@ -16,9 +16,7 @@ class LotesPorVencerNotification extends Notification implements ShouldQueue
     use Queueable;
 
     /** @param array<int, array{producto: string, lote: string, vence: string, dias: int, cantidad: int}> $lotes */
-    public function __construct(public array $lotes, public int $dias)
-    {
-    }
+    public function __construct(public array $lotes, public int $dias) {}
 
     public function via(object $notifiable): array
     {

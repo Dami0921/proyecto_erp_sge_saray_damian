@@ -14,6 +14,7 @@ class Venta extends Model
     protected string $auditLog = 'ventas';
 
     public const COMPLETADA = 'completada';
+
     public const ANULADA = 'anulada';
 
     protected $table = 'ventas';

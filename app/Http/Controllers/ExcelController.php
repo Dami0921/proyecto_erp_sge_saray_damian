@@ -34,7 +34,7 @@ class ExcelController extends Controller
 
     public function plantilla()
     {
-        return Excel::download(new PlantillaProductosExport(), 'plantilla_productos.xlsx');
+        return Excel::download(new PlantillaProductosExport, 'plantilla_productos.xlsx');
     }
 
     public function formularioImportar()
@@ -44,7 +44,7 @@ class ExcelController extends Controller
 
     public function importar(ImportarProductosRequest $request)
     {
-        $importacion = new ProductosImport();
+        $importacion = new ProductosImport;
         Excel::import($importacion, $request->file('archivo'));
 
         // Filas omitidas: cada una con su número de fila, columna y mensajes de error

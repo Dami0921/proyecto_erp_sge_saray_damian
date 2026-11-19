@@ -17,9 +17,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
  */
 class VentasExport implements FromQuery, ShouldAutoSize, WithHeadings, WithMapping, WithStyles, WithTitle
 {
-    public function __construct(private ?string $desde = null, private ?string $hasta = null)
-    {
-    }
+    public function __construct(private ?string $desde = null, private ?string $hasta = null) {}
 
     public function query(): Builder
     {

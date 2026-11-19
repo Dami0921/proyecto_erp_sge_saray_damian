@@ -16,7 +16,9 @@ use Database\Seeders\RolePermissionSeeder;
 trait PreparaEntorno
 {
     protected User $admin;
+
     protected User $vendedor;
+
     protected User $almacenista;
 
     protected function prepararEntorno(): void

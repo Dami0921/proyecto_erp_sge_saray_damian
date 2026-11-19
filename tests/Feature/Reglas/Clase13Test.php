@@ -6,6 +6,7 @@ use App\Models\Categoria;
 use App\Models\Lote;
 use App\Models\MovimientoInventario;
 use App\Models\Producto;
+use App\Services\VentaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\Concerns\PreparaEntorno;
@@ -205,7 +206,7 @@ class Clase13Test extends TestCase
 
     private function vender(Producto $p): void
     {
-        app(\App\Services\VentaService::class)->registrar($this->datosVenta($p, 1), $this->vendedor->id);
+        app(VentaService::class)->registrar($this->datosVenta($p, 1), $this->vendedor->id);
     }
 
     /** XLS2. Importación: guarda las filas válidas, omite las inválidas con fila y columna, y no toca el stock. */

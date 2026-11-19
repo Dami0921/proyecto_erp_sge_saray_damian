@@ -4,7 +4,6 @@ namespace Tests\Feature\Reglas;
 
 use App\Events\CompraRecibida;
 use App\Events\VentaRegistrada;
-use App\Models\User;
 use App\Notifications\CompraRecibidaNotification;
 use App\Notifications\LotesPorVencerNotification;
 use App\Notifications\StockBajoNotification;
