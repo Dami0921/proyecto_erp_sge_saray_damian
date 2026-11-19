@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Schema;
 
 class Cliente extends Model
 {
-    use SoftDeletes;
+    use Auditable, SoftDeletes;
+
+    // Auditoría (Clase 12)
+    protected string $auditLog = 'clientes';
 
     public const TIPOS = ['Natural', 'Empresa', 'Cooperativa', 'Finca'];
 

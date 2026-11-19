@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Producto extends Model
 {
-    use SoftDeletes;
+    use Auditable, SoftDeletes;
+
+    // Auditoría (Clase 12)
+    protected string $auditLog = 'productos';
 
     protected $table = 'productos';
 
@@ -44,5 +48,11 @@ class Producto extends Model
     public function lotes()
     {
         return $this->hasMany(Lote::class);
+    }
+
+    // Kardex del producto (Clase 12)
+    public function movimientos()
+    {
+        return $this->hasMany(MovimientoInventario::class);
     }
 }

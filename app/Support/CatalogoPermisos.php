@@ -19,6 +19,8 @@ class CatalogoPermisos
         'clientes' => 'Clientes',
         'compras' => 'Compras',
         'ventas' => 'Ventas',
+        'kardex' => 'Kardex de inventario',
+        'auditoria' => 'Auditoría y bitácora',
         'reportes' => 'Reportes (Ventas − Compras)',
         'modulos' => 'Módulos del sistema',
         'usuarios' => 'Usuarios',
@@ -31,6 +33,7 @@ class CatalogoPermisos
         'editar' => 'Editar',
         'eliminar' => 'Eliminar / anular',
         'recibir' => 'Recibir mercancía',
+        'ajustar' => 'Ajustar',
         'gestionar' => 'Gestionar',
     ];
 

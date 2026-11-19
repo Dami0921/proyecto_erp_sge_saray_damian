@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Lote;
 use App\Models\Producto;
+use App\Services\InventarioService;
 
 class LoteSeeder extends Seeder
 {
-    public function run(): void
+    public function run(InventarioService $inventario): void
     {
         $productos = Producto::all();
 
         foreach ($productos as $producto) {
-            Lote::create([
+            $inventario->ingresarLote([
                 'producto_id' => $producto->id,
                 'numero_lote' => 'L-' . str_pad($producto->id, 4, '0', STR_PAD_LEFT),
                 'fecha_ingreso' => now()->subDays(10),
@@ -21,7 +21,7 @@ class LoteSeeder extends Seeder
                 'cantidad_inicial' => 100,
                 'cantidad_actual' => 100,
                 'costo_unitario' => 15000,
-            ]);
+            ], 'inventario_inicial', null, 'Saldo inicial del lote');
         }
     }
 }

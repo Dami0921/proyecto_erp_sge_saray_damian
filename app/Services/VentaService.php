@@ -11,6 +11,11 @@ use Illuminate\Validation\ValidationException;
 
 class VentaService
 {
+    // Clase 12: las existencias SOLO cambian a través del InventarioService (kardex)
+    public function __construct(private InventarioService $inventario)
+    {
+    }
+
     /**
      * Registra una venta completa dentro de una transacción: si algo falla, no se guarda nada.
      *
@@ -112,7 +117,7 @@ class VentaService
                     'subtotal' => $linea['subtotal'],
                 ]);
 
-                $linea['lote']->decrement('cantidad_actual', $linea['cantidad']);
+                $this->inventario->salida($linea['lote'], $linea['cantidad'], 'venta', $venta, $linea['precio_unitario']);
             }
 
             return $venta;
@@ -136,8 +141,9 @@ class VentaService
 
             $unidades = 0;
             foreach ($venta->detalles()->get() as $detalle) {
-                Lote::lockForUpdate()->findOrFail($detalle->lote_id)
-                    ->increment('cantidad_actual', $detalle->cantidad);
+                $this->inventario->entrada(
+                    Lote::findOrFail($detalle->lote_id), (int) $detalle->cantidad, 'anulacion_venta', $venta, (float) $detalle->precio_unitario
+                );
                 $unidades += $detalle->cantidad;
             }
 

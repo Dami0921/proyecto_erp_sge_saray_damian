@@ -25,6 +25,8 @@ class RolePermissionSeeder extends Seeder
             // Compras (eliminar-compras = anular; recibir-compras = registrar llegada de mercancía)
             'ver-compras', 'crear-compras', 'editar-compras', 'eliminar-compras', 'recibir-compras',
             'ver-reportes',
+            // Clase 12: kardex (ajustar = corregir existencias con motivo) y bitácora de auditoría
+            'ver-kardex', 'ajustar-kardex', 'ver-auditoria',
             // Configuración: módulos del sistema, usuarios (con roles y permisos directos) y matriz de roles
             'gestionar-modulos', 'gestionar-usuarios', 'gestionar-roles',
         ];
@@ -49,6 +51,7 @@ class RolePermissionSeeder extends Seeder
             'ver-proveedores', 'crear-proveedores', 'editar-proveedores',
             'ver-lotes', 'crear-lotes', 'editar-lotes',
             'ver-compras', 'crear-compras', 'recibir-compras',
+            'ver-kardex', 'ajustar-kardex',
         ]);
     }
 }

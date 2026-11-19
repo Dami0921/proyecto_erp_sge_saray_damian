@@ -53,6 +53,18 @@
                     </x-nav-link>
                     @endcan
                     @endmodulo
+                    @modulo('inventario')
+                    @can('ver-kardex')
+                    <x-nav-link :href="route('inventario.kardex')" :active="request()->routeIs('inventario.*')">
+                        {{ __('Kardex') }}
+                    </x-nav-link>
+                    @endcan
+                    @endmodulo
+                    @can('ver-auditoria')
+                    <x-nav-link :href="route('auditoria.index')" :active="request()->routeIs('auditoria.*')">
+                        {{ __('Auditoría') }}
+                    </x-nav-link>
+                    @endcan
                     @canany(['gestionar-usuarios', 'gestionar-roles', 'gestionar-modulos'])
                     <x-nav-link :href="route('configuracion.index')" :active="request()->routeIs('configuracion.*') || request()->routeIs('modulos.*')">
                         {{ __('Configuración') }}
@@ -155,6 +167,18 @@
             </x-responsive-nav-link>
             @endcan
             @endmodulo
+            @modulo('inventario')
+            @can('ver-kardex')
+            <x-responsive-nav-link :href="route('inventario.kardex')" :active="request()->routeIs('inventario.*')">
+                {{ __('Kardex') }}
+            </x-responsive-nav-link>
+            @endcan
+            @endmodulo
+            @can('ver-auditoria')
+            <x-responsive-nav-link :href="route('auditoria.index')" :active="request()->routeIs('auditoria.*')">
+                {{ __('Auditoría') }}
+            </x-responsive-nav-link>
+            @endcan
             @canany(['gestionar-usuarios', 'gestionar-roles', 'gestionar-modulos'])
             <x-responsive-nav-link :href="route('configuracion.index')" :active="request()->routeIs('configuracion.*') || request()->routeIs('modulos.*')">
                 {{ __('Configuración') }}

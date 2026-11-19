@@ -41,6 +41,9 @@ class SeguridadService
             $user->syncRoles($roles);
             $user->syncPermissions($data['permisos'] ?? []); // permisos directos
 
+            $user->unsetRelation('roles')->unsetRelation('permissions');
+            $this->registrarSeguridad($user, 'usuario creado con sus roles y permisos', [], $this->fotoAccesos($user));
+
             return $user;
         });
     }
@@ -67,6 +70,8 @@ class SeguridadService
                 $this->exigirOtroAdministrador($user, 'roles', 'No se puede quitar el rol admin: es el único administrador del sistema.');
             }
 
+            $antes = $this->fotoAccesos($user); // para la bitácora de seguridad
+
             $user->fill([
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -80,6 +85,12 @@ class SeguridadService
             $user->save();
             $user->syncRoles($roles);
             $user->syncPermissions($data['permisos'] ?? []);
+
+            $user->unsetRelation('roles')->unsetRelation('permissions');
+            $despues = $this->fotoAccesos($user);
+            if ($antes !== $despues) {
+                $this->registrarSeguridad($user, 'roles y permisos del usuario modificados', $antes, $despues);
+            }
 
             return $user;
         });
@@ -124,15 +135,21 @@ class SeguridadService
             $existentes = Permission::pluck('name')->all();
 
             foreach (Role::all() as $rol) {
+                $antes = $rol->permissions()->pluck('name')->sort()->values()->all();
+
                 // Regla: el rol admin SIEMPRE conserva todos los permisos (no se edita desde la matriz)
                 if ($rol->name === self::ROL_ADMIN) {
                     $rol->syncPermissions(Permission::all());
-                    continue;
+                } else {
+                    // Solo se aceptan permisos que existan en el catálogo
+                    $permisos = array_values(array_intersect($matriz[$rol->id] ?? [], $existentes));
+                    $rol->syncPermissions($permisos);
                 }
 
-                // Solo se aceptan permisos que existan en el catálogo
-                $permisos = array_values(array_intersect($matriz[$rol->id] ?? [], $existentes));
-                $rol->syncPermissions($permisos);
+                $despues = $rol->permissions()->pluck('name')->sort()->values()->all();
+                if ($antes !== $despues) {
+                    $this->registrarSeguridad($rol, "permisos del rol «{$rol->name}» modificados", ['permisos' => $antes], ['permisos' => $despues]);
+                }
             }
         });
 
@@ -141,7 +158,12 @@ class SeguridadService
 
     public function crearRol(string $nombre): Role
     {
-        return DB::transaction(fn () => Role::create(['name' => $nombre, 'guard_name' => 'web']));
+        return DB::transaction(function () use ($nombre) {
+            $rol = Role::create(['name' => $nombre, 'guard_name' => 'web']);
+            $this->registrarSeguridad($rol, "rol «{$nombre}» creado", [], ['nombre' => $nombre], 'created');
+
+            return $rol;
+        });
     }
 
     public function eliminarRol(Role $rol): void
@@ -160,11 +182,35 @@ class SeguridadService
                 throw ValidationException::withMessages(['rol' => "El rol «{$rol->name}» tiene {$usuarios} usuario(s) asignado(s). Reasígnalos antes de eliminarlo."]);
             }
 
+            $this->registrarSeguridad($rol, "rol «{$rol->name}» eliminado", ['nombre' => $rol->name], [], 'deleted');
             $rol->delete();
         });
     }
 
     // ------------------------------------------------------------------ Internos
+
+    /** Roles y permisos directos de un usuario, ordenados, para comparar antes → después. */
+    private function fotoAccesos(User $user): array
+    {
+        return [
+            'roles' => $user->getRoleNames()->sort()->values()->all(),
+            'permisos_directos' => $user->getDirectPermissions()->pluck('name')->sort()->values()->all(),
+        ];
+    }
+
+    /**
+     * Spatie Activitylog no audita roles ni permisos por sí solo: se registran a mano en la bitácora
+     * «seguridad», con el mismo formato (old / attributes) de los modelos auditados.
+     */
+    private function registrarSeguridad($sujeto, string $descripcion, array $antes, array $despues, string $evento = 'updated'): void
+    {
+        activity('seguridad')
+            ->performedOn($sujeto)
+            ->causedBy(auth()->user())
+            ->event($evento)
+            ->withChanges(['old' => $antes, 'attributes' => $despues])
+            ->log($descripcion);
+    }
 
     /** Regla: todo usuario debe tener al menos un rol, y solo roles que existan. */
     private function rolesValidos(array $roles): array

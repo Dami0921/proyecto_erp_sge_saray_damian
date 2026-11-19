@@ -37,4 +37,10 @@ class Lote extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+
+    // Movimientos del kardex que han tocado este lote (Clase 12)
+    public function movimientos()
+    {
+        return $this->hasMany(MovimientoInventario::class);
+    }
 }

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Compra extends Model
 {
-    use SoftDeletes;
+    use Auditable, SoftDeletes;
+
+    // Auditoría (Clase 12)
+    protected string $auditLog = 'compras';
 
     public const PENDIENTE = 'pendiente';
     public const PARCIAL = 'parcial';

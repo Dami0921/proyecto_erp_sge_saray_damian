@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuditoriaController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\Configuracion\ConfiguracionController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\Configuracion\RolController;
 use App\Http\Controllers\Configuracion\UsuarioController;
 use App\Http\Controllers\CompraController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ModuloController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
@@ -50,6 +52,9 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
         Route::post('roles', [RolController::class, 'store'])->name('roles.store');
         Route::delete('roles/{rol}', [RolController::class, 'destroy'])->name('roles.destroy');
     });
+
+    // Auditoría (Clase 12). NÚCLEO: nunca depende de un módulo apagado
+    Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
 
     // Panel de módulos (NÚCLEO: nunca depende de un módulo apagado)
     Route::middleware('permission:gestionar-modulos')->group(function () {
@@ -111,6 +116,13 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
             ->withTrashed()
             ->name('categorias.restore');
         Route::resource('categorias', CategoriaController::class)->except('show')->names('categorias');
+
+        // Kardex y ajustes de inventario (Clase 12): los permisos se validan en el controlador
+        Route::get('inventario/kardex', [InventarioController::class, 'kardex'])->name('inventario.kardex');
+        Route::get('inventario/ajustes/{producto}', [InventarioController::class, 'ajustar'])
+            ->withTrashed()->name('inventario.ajustar');
+        Route::post('inventario/ajustes/{producto}', [InventarioController::class, 'guardarAjuste'])
+            ->withTrashed()->name('inventario.ajustar.guardar');
     });
 });
 

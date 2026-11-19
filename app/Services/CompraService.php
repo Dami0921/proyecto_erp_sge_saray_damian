@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Compra;
 use App\Models\DetalleCompra;
-use App\Models\Lote;
 use App\Models\Producto;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +11,11 @@ use Illuminate\Validation\ValidationException;
 
 class CompraService
 {
+    // Clase 12: los lotes nuevos y el stock pasan por el InventarioService (kardex)
+    public function __construct(private InventarioService $inventario)
+    {
+    }
+
     /**
      * Registra una ORDEN DE COMPRA (estado "pendiente"). NO mueve el inventario:
      * el stock solo aumenta cuando la mercancía llega (método recibir).
@@ -130,7 +134,7 @@ class CompraService
                     $numeroLote = 'LC-'.$compra->numero_orden.'-'.$detalle->id.'-'.($detalle->lotes()->count() + 1);
                 }
 
-                Lote::create([
+                $this->inventario->ingresarLote([
                     'producto_id' => $detalle->producto_id,
                     'numero_lote' => $numeroLote,
                     'fecha_ingreso' => today(),
@@ -139,7 +143,7 @@ class CompraService
                     'cantidad_actual' => $cantidad,
                     'costo_unitario' => $detalle->costo_unitario,
                     'detalle_compra_id' => $detalle->id,
-                ]);
+                ], 'compra', $compra, "Recepción de {$compra->numero_orden}");
 
                 $detalle->increment('cantidad_recibida', $cantidad);
             }

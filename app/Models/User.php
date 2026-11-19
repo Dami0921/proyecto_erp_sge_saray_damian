@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\Auditable;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +14,13 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use Auditable, HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
+
+    // Auditoría (Clase 12)
+    protected string $auditLog = 'usuarios';
+
+    // Nunca se audita la contraseña
+    protected array $auditExcept = ['password'];
 
     /** Clave de sesión donde se guarda el rol con el que el usuario eligió trabajar. */
     public const SESION_ROL_ACTIVO = 'rol_activo';
