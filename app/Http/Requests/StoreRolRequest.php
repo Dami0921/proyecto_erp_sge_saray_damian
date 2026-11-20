@@ -27,7 +27,7 @@ class StoreRolRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nombre.regex' => 'Usa solo minúsculas, números, guion o guion bajo (ej.: contador, jefe-bodega).',
+            'nombre.regex' => 'Usa solo minúsculas, números, guion o guion bajo (ej.: jefe-bodega, auxiliar-caja).',
             'nombre.unique' => 'Ya existe un rol con ese nombre.',
         ];
     }

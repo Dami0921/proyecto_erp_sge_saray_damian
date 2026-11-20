@@ -94,7 +94,7 @@
                 <form method="POST" action="{{ route('configuracion.roles.store') }}" class="flex flex-wrap items-start gap-3">
                     @csrf
                     <div>
-                        <x-text-input name="nombre" type="text" placeholder="ej.: contador" :value="old('nombre')" required />
+                        <x-text-input name="nombre" type="text" placeholder="ej.: jefe-bodega" :value="old('nombre')" required />
                         <x-input-error :messages="$errors->get('nombre')" class="mt-2" />
                     </div>
                     <x-primary-button>Crear rol</x-primary-button>

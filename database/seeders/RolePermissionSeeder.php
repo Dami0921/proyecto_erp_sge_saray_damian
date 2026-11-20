@@ -56,5 +56,14 @@ class RolePermissionSeeder extends Seeder
             'ver-kardex', 'ajustar-kardex',
             'exportar-productos', 'importar-productos',
         ]);
+
+        // Contador: rol de CONSULTA. Ve ventas, compras, inventario, kardex, auditoría y reportes, y exporta a
+        // Excel, pero no crea, edita, anula ni ajusta nada (separación de funciones: quien registra no audita).
+        Role::findOrCreate('contador')->syncPermissions([
+            'ver-productos', 'ver-categorias', 'ver-proveedores', 'ver-clientes', 'ver-lotes',
+            'ver-ventas', 'ver-compras', 'ver-reportes',
+            'ver-kardex', 'ver-auditoria',
+            'exportar-productos', 'exportar-ventas',
+        ]);
     }
 }

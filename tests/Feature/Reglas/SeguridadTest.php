@@ -220,10 +220,10 @@ class SeguridadTest extends TestCase
         }
 
         // Rol propio con un usuario asignado
-        $contador = $servicio->crearRol('contador');
-        $this->usuario('conta@test.com', ['contador']);
+        $propio = $servicio->crearRol('jefe-bodega');
+        $this->usuario('jefe@test.com', ['jefe-bodega']);
         $this->expectException(ValidationException::class);
-        $servicio->eliminarRol($contador);
+        $servicio->eliminarRol($propio);
     }
 
     // ---------------------------------------------------------------- Usuarios: papelera y creación

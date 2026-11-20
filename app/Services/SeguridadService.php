@@ -17,7 +17,7 @@ use Spatie\Permission\PermissionRegistrar;
 class SeguridadService
 {
     /** Roles base del sistema: no se pueden eliminar ni renombrar. */
-    public const ROLES_BASE = ['admin', 'vendedor', 'almacenista'];
+    public const ROLES_BASE = ['admin', 'vendedor', 'almacenista', 'contador'];
 
     /** Rol con todos los permisos, siempre. */
     public const ROL_ADMIN = 'admin';

@@ -9,7 +9,7 @@ class DatabaseSeeder extends Seeder
     /**
      * Siembra TODO lo necesario para probar el sistema desde cero:
      *   sail artisan migrate:fresh --seed
-     * Usuarios de prueba (contraseña: password): admin@, vendedor@, almacenista@, multirol@, supervisor@ test.com
+     * Usuarios de prueba (contraseña: password): admin@, vendedor@, almacenista@, contador@, multirol@, supervisor@ test.com
      */
     public function run(): void
     {

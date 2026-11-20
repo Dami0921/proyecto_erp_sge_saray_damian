@@ -16,6 +16,7 @@ class UserRoleSeeder extends Seeder
             ['name' => 'Admin Prueba', 'email' => 'admin@test.com', 'roles' => ['admin']],
             ['name' => 'Vendedor Prueba', 'email' => 'vendedor@test.com', 'roles' => ['vendedor']],
             ['name' => 'Almacenista Prueba', 'email' => 'almacenista@test.com', 'roles' => ['almacenista']],
+            ['name' => 'Contador Prueba', 'email' => 'contador@test.com', 'roles' => ['contador']],
 
             // Varios roles: al iniciar sesión debe elegir el rol activo (vendedor o almacenista)
             ['name' => 'Multirol Prueba', 'email' => 'multirol@test.com', 'roles' => ['vendedor', 'almacenista']],
