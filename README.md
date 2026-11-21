@@ -24,33 +24,125 @@ Sistema de gestión empresarial para un almacén de insumos agrícolas: inventar
 | Cargas masivas | Importar productos, clientes y proveedores desde Excel/CSV con validación fila por fila |
 | Configuración | Usuarios con varios roles y permisos directos (con vista de permisos efectivos), matriz de permisos por rol, panel de módulos activables |
 
-## Levantar el proyecto desde cero (Docker + Laravel Sail)
+## Instalación y ejecución paso a paso
 
-Requisitos: Docker Desktop (con WSL2 en Windows), Git.
+> Todo el proyecto corre dentro de contenedores Docker (Laravel Sail). **No hace falta instalar PHP, Composer, Node ni MySQL** en el computador. Esta guía fue validada en Windows 11 + WSL2 (Ubuntu) + Docker Desktop; en Linux y macOS los pasos son los mismos.
+
+### 1. Programas que deben estar instalados antes de empezar
+
+| Programa | Versión / detalle | Cómo comprobarlo |
+|---|---|---|
+| **Docker Desktop** | Abierto y en estado "Running" (ballena fija en la barra de tareas) | `docker --version` y `docker compose version` |
+| **WSL2 + Ubuntu** (solo Windows) | Docker Desktop → Settings → Resources → WSL integration → activar la distro Ubuntu | `wsl -l -v` (VERSION = 2) |
+| **Git** | Cualquier versión reciente | `git --version` |
+| Conexión a internet | La primera instalación descarga imágenes y paquetes (varios minutos) | — |
+
+Requisitos del equipo: ~8 GB de RAM libres y ~10 GB de disco.
+
+**Puertos libres:** 80 (aplicación), 3306 (MySQL), 8025 y 1025 (Mailpit) y 5173 (Vite). Si alguno está ocupado, agregue en `.env` (paso 3) el que cambie, por ejemplo `APP_PORT=8080`, `FORWARD_DB_PORT=3307`, `FORWARD_MAILPIT_DASHBOARD_PORT=8026`, y use ese puerto en la URL.
+
+**Importante en Windows:** ejecute todos los comandos desde la terminal de **Ubuntu (WSL)** y clone el proyecto dentro del sistema de archivos de Linux (por ejemplo `~/`), **no** en `/mnt/c/...` (es muy lento y da errores de permisos).
+
+### 2. La base de datos
+
+No hay que instalar ni crear nada: **MySQL 8.4 se levanta en un contenedor** junto con la aplicación y la base se crea sola con estos datos (ya vienen en `.env.example`):
+
+| Dato | Valor |
+|---|---|
+| Servidor (`DB_HOST`) | `mysql` (nombre del contenedor; desde su PC: `127.0.0.1:3306`) |
+| Base de datos | `laravel` (y `testing` para las pruebas) |
+| Usuario / contraseña | `sail` / `password` |
+
+Las tablas y los datos de demostración los crea el comando `migrate:fresh --seed` del paso 6. La primera vez MySQL tarda ~30 s en estar listo.
+
+### 3. Instalación
+
+Ejecute en orden, sin saltar pasos:
 
 ```bash
+# 1) Descargar el proyecto
 git clone https://github.com/Dami0921/proyecto_erp_sge_saray_damian.git
 cd proyecto_erp_sge_saray_damian
-git checkout final             # opcional: la versión entregada
+git checkout final                 # versión entregada
 
-cp .env.example .env           # en Windows: copy .env.example .env
+# 2) Crear el archivo de configuración (no requiere editar nada)
+cp .env.example .env
 
-# Instalar dependencias PHP sin tener PHP instalado (la carpeta vendor/ no está en el repo)
+# 3) Instalar las dependencias PHP (carpeta vendor/) usando Docker
 docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/var/www/html" -w /var/www/html \
     laravelsail/php84-composer:latest composer install --ignore-platform-reqs
 
+# 4) Levantar los contenedores (app, MySQL, Mailpit). Usar sail, no "docker compose" directo
 ./vendor/bin/sail up -d
+./vendor/bin/sail ps               # los 3 servicios deben decir "Up" (mysql: "healthy")
+
+# 5) Generar la llave de la aplicación
 ./vendor/bin/sail artisan key:generate
+
+# 6) Crear las tablas y cargar los datos de demostración (esperar ~30 s tras el paso 4)
 ./vendor/bin/sail artisan migrate:fresh --seed
+
+# 7) Instalar y compilar el frontend
 ./vendor/bin/sail npm install
 ./vendor/bin/sail npm run build
 ```
 
-Abrir <http://localhost>. Para repetir la carga de datos desde cero: `sail artisan migrate:fresh --seed`.
+Resultado esperado: el paso 6 termina listando migraciones en `DONE` y los seeders sin errores; el paso 7 termina con `✓ built in ...`.
 
-Servicios que levanta Sail: la aplicación (puerto 80), **MySQL 8.4** y **Mailpit** (bandeja de correos de prueba en <http://localhost:8025>).
+**Comodidad (opcional):** `alias sail='./vendor/bin/sail'` para escribir `sail artisan ...` en lugar de la ruta larga (para dejarlo fijo, agregue esa línea a `~/.bashrc`).
 
-### Cola de correos y tareas programadas
+### 4. Ejecución
+
+Abra <http://localhost> e ingrese con uno de los usuarios de la tabla "Usuarios de prueba" (contraseña `password`), por ejemplo `admin@test.com`.
+
+| Servicio | URL |
+|---|---|
+| Aplicación | <http://localhost> |
+| Mailpit (correos de prueba) | <http://localhost:8025> |
+
+**Correos y campana de notificaciones:** se envían por cola. Deje corriendo en una **segunda terminal**:
+
+```bash
+./vendor/bin/sail artisan queue:work
+```
+
+Sin el worker la aplicación funciona igual; solo quedan pendientes los correos.
+
+### 5. Uso diario
+
+```bash
+./vendor/bin/sail up -d            # encender
+./vendor/bin/sail stop             # apagar (conserva los datos)
+./vendor/bin/sail down             # apagar y borrar contenedores (conserva los datos)
+./vendor/bin/sail down -v          # apagar y BORRAR la base de datos (reinicio total; repetir pasos 4 a 6)
+./vendor/bin/sail artisan migrate:fresh --seed   # reiniciar solo los datos de demostración
+```
+
+### 6. Verificación rápida de que todo quedó bien
+
+1. `sail artisan test` termina en verde (más de 100 pruebas).
+2. <http://localhost> muestra la pantalla de inicio y el login entra con `admin@test.com` / `password`.
+3. El Dashboard muestra datos (productos, ventas, lotes).
+4. En Configuración → Organización se puede cambiar nombre, color y logo.
+5. Con `queue:work` activo, una venta que deja stock bajo genera un correo en Mailpit y una notificación en la campana.
+
+### 7. Solución de problemas
+
+| Síntoma | Causa y solución |
+|---|---|
+| `docker: command not found` o `Cannot connect to the Docker daemon` | Docker Desktop no está abierto o falta activar la integración WSL (Settings → Resources → WSL integration). |
+| `port is already allocated` / `address already in use` | Otro programa usa ese puerto (80, 3306, 8025...). Cambie el puerto en `.env` (ver punto 1) y ejecute `sail up -d` de nuevo. |
+| `permission denied: ./vendor/bin/sail` | `chmod +x vendor/bin/sail`. |
+| `sail: vendor/autoload.php not found` o `vendor/bin/sail: No such file` | Faltó el paso 3 (composer install). |
+| `SQLSTATE[HY000] [2002] Connection refused` | MySQL aún está arrancando: espere 30 s, verifique `sail ps` y repita el comando. |
+| `SQLSTATE[HY000] [1045] Access denied` | Quedó un volumen de MySQL antiguo: `sail down -v`, `sail up -d`, espere 30 s y repita `migrate:fresh --seed`. |
+| `No application encryption key has been specified` | Falta el paso 5: `sail artisan key:generate`. |
+| `Vite manifest not found` / página sin estilos | Falta `sail npm run build` (paso 7). |
+| `Permission denied` en `storage/logs` o `bootstrap/cache` | `sail exec -u root laravel.test chmod -R 777 storage bootstrap/cache`. |
+| No llegan correos a Mailpit | El worker no está corriendo: `sail artisan queue:work`. |
+| `Base table or view already exists` | La base tenía datos a medias: `sail artisan migrate:fresh --seed`. |
+
+## Cola de correos y tareas programadas
 
 Las notificaciones se envían por **cola** (`QUEUE_CONNECTION=database`): si el worker no está corriendo, los correos quedan esperando en la tabla `jobs` y la venta no se afecta. Para ver los correos y la campana funcionando:
 
