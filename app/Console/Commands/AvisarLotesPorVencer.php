@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Lote;
+use App\Models\Modulo;
 use App\Models\User;
 use App\Notifications\LotesPorVencerNotification;
 use Illuminate\Console\Command;
@@ -16,6 +17,12 @@ class AvisarLotesPorVencer extends Command
 
     public function handle(): int
     {
+        if (! Modulo::activo('inventario')) {
+            $this->info('El módulo de Inventario está desactivado: no hay lotes que revisar.');
+
+            return self::SUCCESS;
+        }
+
         $dias = (int) ($this->option('dias') ?: config('erp.dias_alerta_vencimiento'));
 
         $lotes = Lote::with('producto')

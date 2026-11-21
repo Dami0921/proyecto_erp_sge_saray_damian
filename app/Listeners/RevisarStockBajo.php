@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\VentaRegistrada;
+use App\Models\Modulo;
 use App\Models\User;
 use App\Notifications\StockBajoNotification;
 use Illuminate\Support\Facades\Notification;
@@ -15,6 +16,11 @@ class RevisarStockBajo
 {
     public function handle(VentaRegistrada $evento): void
     {
+        // La alerta invita a crear una orden de compra: si el módulo Compras está apagado no se envía
+        if (! Modulo::activo('compras')) {
+            return;
+        }
+
         $umbral = config('erp.umbral_stock_bajo');
         $evento->venta->loadMissing('detalles.producto');
 

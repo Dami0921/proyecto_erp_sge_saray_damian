@@ -23,12 +23,17 @@ Route::prefix('v1')->group(function () {
         Route::get('me', [AuthController::class, 'me']);
         Route::post('logout', [AuthController::class, 'logout']);
 
-        Route::get('productos', [ProductoController::class, 'index']);
-        Route::get('productos/{producto}', [ProductoController::class, 'show']);
+        // Igual que en la web: si el módulo está apagado, el recurso responde 404 (en JSON)
+        Route::middleware('modulo:inventario')->group(function () {
+            Route::get('productos', [ProductoController::class, 'index']);
+            Route::get('productos/{producto}', [ProductoController::class, 'show']);
 
-        Route::get('lotes/por-vencer', [LoteController::class, 'porVencer']);
+            Route::get('lotes/por-vencer', [LoteController::class, 'porVencer']);
+        });
 
-        Route::get('ventas/{venta}', [VentaController::class, 'show'])->withTrashed();
-        Route::post('ventas', [VentaController::class, 'store']);
+        Route::middleware('modulo:ventas')->group(function () {
+            Route::get('ventas/{venta}', [VentaController::class, 'show'])->withTrashed();
+            Route::post('ventas', [VentaController::class, 'store']);
+        });
     });
 });
