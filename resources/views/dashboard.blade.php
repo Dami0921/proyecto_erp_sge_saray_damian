@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
 
             @if (session('success'))
                 <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md">{{ session('success') }}</div>
@@ -14,7 +14,7 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
-                    <p>AgroInsumos El Cultivador S.A.S. - Panel de control</p>
+                    <p>{{ \App\Models\Organizacion::actual()->nombre }} - Panel de control</p>
                     <p class="text-sm text-gray-600 mt-1">
                         @if ($roles->count() > 1)
                             Rol activo: <strong class="text-green-800">{{ $rolActivo }}</strong>

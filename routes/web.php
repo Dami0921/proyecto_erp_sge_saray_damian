@@ -9,9 +9,11 @@ use App\Http\Controllers\Configuracion\RolController;
 use App\Http\Controllers\Configuracion\UsuarioController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\ImportacionController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ModuloController;
 use App\Http\Controllers\NotificacionController;
+use App\Http\Controllers\OrganizacionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProveedorController;
@@ -45,13 +47,16 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
 
     // CONFIGURACIÓN (NÚCLEO: nunca depende de un módulo apagado). Cada sección exige su propio permiso.
     Route::get('configuracion', ConfiguracionController::class)
-        ->middleware('permission:gestionar-usuarios|gestionar-roles|gestionar-modulos')
+        ->middleware('permission:gestionar-usuarios|gestionar-roles|gestionar-modulos|gestionar-organizacion')
         ->name('configuracion.index');
 
     Route::prefix('configuracion')->name('configuracion.')->group(function () {
         Route::patch('usuarios/{usuario}/restore', [UsuarioController::class, 'restore'])
             ->withTrashed()
             ->name('usuarios.restore');
+        Route::get('usuarios/{usuario}/permisos', [UsuarioController::class, 'permisos'])
+            ->withTrashed()
+            ->name('usuarios.permisos');
         Route::resource('usuarios', UsuarioController::class)->except('show');
 
         Route::get('roles', [RolController::class, 'index'])->name('roles.index');
@@ -63,6 +68,12 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
     // Auditoría (Clase 12). NÚCLEO: nunca depende de un módulo apagado
     Route::get('auditoria', [AuditoriaController::class, 'index'])->name('auditoria.index');
 
+    // Organización: identidad corporativa de la empresa (NÚCLEO: nunca depende de un módulo apagado)
+    Route::middleware('permission:gestionar-organizacion')->group(function () {
+        Route::get('organizacion', [OrganizacionController::class, 'edit'])->name('organizacion.edit');
+        Route::put('organizacion', [OrganizacionController::class, 'update'])->name('organizacion.update');
+    });
+
     // Panel de módulos (NÚCLEO: nunca depende de un módulo apagado)
     Route::middleware('permission:gestionar-modulos')->group(function () {
         Route::get('modulos', [ModuloController::class, 'index'])->name('modulos.index');
@@ -71,6 +82,10 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
 
     // Módulo CLIENTES: si está apagado, estas rutas responden 404
     Route::middleware('modulo:clientes')->group(function () {
+        // Carga masiva desde Excel/CSV (antes del resource para que «importar» no se confunda con un id)
+        Route::get('clientes/plantilla', [ImportacionController::class, 'clientesPlantilla'])->name('clientes.plantilla');
+        Route::get('clientes/importar', [ImportacionController::class, 'clientes'])->name('clientes.importar');
+        Route::post('clientes/importar', [ImportacionController::class, 'clientesGuardar'])->name('clientes.importar.guardar');
         Route::patch('clientes/{cliente}/restore', [ClienteController::class, 'restore'])
             ->withTrashed()
             ->name('clientes.restore');
@@ -79,6 +94,9 @@ Route::middleware(['auth', 'rol.activo'])->group(function () {
 
     // Módulo PROVEEDORES: si está apagado, estas rutas responden 404
     Route::middleware('modulo:proveedores')->group(function () {
+        Route::get('proveedores/plantilla', [ImportacionController::class, 'proveedoresPlantilla'])->name('proveedores.plantilla');
+        Route::get('proveedores/importar', [ImportacionController::class, 'proveedores'])->name('proveedores.importar');
+        Route::post('proveedores/importar', [ImportacionController::class, 'proveedoresGuardar'])->name('proveedores.importar.guardar');
         Route::patch('proveedores/{proveedor}/restore', [ProveedorController::class, 'restore'])
             ->withTrashed()
             ->name('proveedores.restore');

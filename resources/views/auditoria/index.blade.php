@@ -15,7 +15,7 @@
     @endphp
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 space-y-4">
 
                 <form method="GET" action="{{ route('auditoria.index') }}" class="flex flex-wrap items-end gap-2">

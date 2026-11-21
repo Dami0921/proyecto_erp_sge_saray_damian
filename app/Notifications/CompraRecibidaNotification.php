@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Compra;
+use App\Models\Organizacion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,7 +29,7 @@ class CompraRecibidaNotification extends Notification implements ShouldQueue
         $estado = $this->completa ? 'recibida por completo' : 'recibida parcialmente (aún hay mercancía pendiente)';
 
         // El PDF se genera con la misma vista de la orden de compra de la web
-        $pdf = Pdf::loadView('pdf.orden_compra', ['compra' => $compra, 'empresa' => config('empresa')])
+        $pdf = Pdf::loadView('pdf.orden_compra', ['compra' => $compra, 'empresa' => Organizacion::actual()->paraPdf()])
             ->setPaper('letter')->output();
 
         return (new MailMessage)

@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
 
             @if (session('success'))
                 <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md">{{ session('success') }}</div>
@@ -26,6 +26,9 @@
                             @else
                                 <a href="{{ route('clientes.index', ['papelera' => 1]) }}" class="text-sm text-green-700 hover:underline">Ver papelera ({{ $totalPapelera }})</a>
                             @endif
+                        @endcan
+                        @can('importar-clientes')
+                            <a href="{{ route('clientes.importar') }}" class="text-sm text-green-700 hover:underline">Importar desde Excel</a>
                         @endcan
                         @can('crear-clientes')
                             <a href="{{ route('clientes.create') }}" class="inline-flex items-center px-4 py-2 bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-800">Nuevo cliente</a>

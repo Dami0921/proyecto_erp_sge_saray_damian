@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreVentaRequest;
 use App\Models\Cliente;
 use App\Models\Modulo;
+use App\Models\Organizacion;
 use App\Models\Producto;
 use App\Models\Venta;
 use App\Services\VentaService;
@@ -96,7 +97,7 @@ class VentaController extends Controller
     {
         $venta->load(['cliente', 'usuario', 'detalles.producto', 'detalles.lote']);
 
-        return Pdf::loadView('pdf.comprobante_venta', ['venta' => $venta, 'empresa' => config('empresa')])
+        return Pdf::loadView('pdf.comprobante_venta', ['venta' => $venta, 'empresa' => Organizacion::actual()->paraPdf()])
             ->setPaper('letter')
             ->stream("comprobante-{$venta->numero_factura}.pdf");
     }

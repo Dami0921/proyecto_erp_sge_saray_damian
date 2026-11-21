@@ -23,6 +23,7 @@ class CatalogoPermisos
         'auditoria' => 'Auditoría y bitácora',
         'reportes' => 'Reportes (Ventas − Compras)',
         'modulos' => 'Módulos del sistema',
+        'organizacion' => 'Organización (identidad corporativa)',
         'usuarios' => 'Usuarios',
         'roles' => 'Roles y permisos',
     ];
@@ -55,6 +56,19 @@ class CatalogoPermisos
             <=> (array_search($b, $orden) === false ? 99 : array_search($b, $orden)));
 
         return $tabla;
+    }
+
+    /** Módulo activable del sistema al que pertenece un grupo de permisos (null = núcleo, siempre activo). */
+    public static function claveModuloSistema(string $modulo): ?string
+    {
+        return match ($modulo) {
+            'productos', 'categorias', 'lotes', 'kardex' => 'inventario',
+            'proveedores' => 'proveedores',
+            'clientes' => 'clientes',
+            'compras' => 'compras',
+            'ventas' => 'ventas',
+            default => null,
+        };
     }
 
     public static function etiquetaModulo(string $modulo): string

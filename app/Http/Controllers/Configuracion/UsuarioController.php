@@ -42,6 +42,19 @@ class UsuarioController extends Controller
         ]);
     }
 
+    /** Permisos efectivos de un usuario: qué trae de cada rol y qué tiene como permiso directo. */
+    public function permisos(User $usuario)
+    {
+        $usuario->load(['roles.permissions', 'permissions']);
+
+        return view('configuracion.usuarios.permisos', [
+            'usuario' => $usuario,
+            'catalogo' => CatalogoPermisos::agrupar(Permission::orderBy('name')->pluck('name')),
+            'porRol' => $usuario->roles->mapWithKeys(fn (Role $rol) => [$rol->name => $rol->permissions->pluck('name')->all()]),
+            'directos' => $usuario->permissions->pluck('name')->all(),
+        ]);
+    }
+
     public function create()
     {
         return view('configuracion.usuarios.create', $this->datosFormulario(new User));

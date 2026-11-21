@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             @if (session('error'))
                 <div class="p-4 bg-red-100 text-red-800 rounded-md">{{ session('error') }}</div>

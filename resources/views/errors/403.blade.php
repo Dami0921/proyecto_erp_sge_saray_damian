@@ -7,7 +7,7 @@
     @endif
 
     <div class="{{ $logueado ? 'py-12' : '' }}">
-        <div class="{{ $logueado ? 'max-w-3xl mx-auto sm:px-6 lg:px-8' : '' }}">
+        <div class="{{ $logueado ? 'max-w-4xl mx-auto sm:px-6 lg:px-8' : '' }}">
             <div class="bg-white shadow-sm sm:rounded-lg p-8 text-center">
                 <p class="text-5xl font-bold text-green-700">403</p>
                 <h3 class="mt-3 text-lg font-semibold text-gray-800">No tienes permiso para esta acción</h3>

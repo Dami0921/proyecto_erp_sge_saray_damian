@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
 
             @if (session('success'))
                 <div class="mb-4 p-4 bg-green-100 text-green-800 rounded-md">{{ session('success') }}</div>
@@ -72,6 +72,7 @@
                                     @endforelse
                                 </td>
                                 <td class="px-4 py-2 text-sm">
+                                    <a href="{{ route('configuracion.usuarios.permisos', $u) }}" class="text-green-700 hover:underline mr-3">Permisos</a>
                                     @if ($u->trashed())
                                         <form action="{{ route('configuracion.usuarios.restore', $u) }}" method="POST" class="inline">
                                             @csrf

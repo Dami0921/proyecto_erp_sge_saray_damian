@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ModuloSeeder::class,          // módulos activables (núcleo, inventario, clientes, ...)
+            OrganizacionSeeder::class,    // identidad corporativa de la empresa (nombre, NIT, logo, color)
             RolePermissionSeeder::class,  // roles y permisos (Spatie)
             UserRoleSeeder::class,        // usuarios de prueba por rol
             CategoriaSeeder::class,       // 10 categorías

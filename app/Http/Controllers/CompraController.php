@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCompraRequest;
 use App\Models\Compra;
 use App\Models\Lote;
 use App\Models\Modulo;
+use App\Models\Organizacion;
 use App\Models\Producto;
 use App\Models\Proveedor;
 use App\Services\CompraService;
@@ -106,7 +107,7 @@ class CompraController extends Controller
     {
         $compra->load(['proveedor', 'usuario', 'detalles.producto']);
 
-        return Pdf::loadView('pdf.orden_compra', ['compra' => $compra, 'empresa' => config('empresa')])
+        return Pdf::loadView('pdf.orden_compra', ['compra' => $compra, 'empresa' => Organizacion::actual()->paraPdf()])
             ->setPaper('letter')
             ->stream("orden-{$compra->numero_orden}.pdf");
     }

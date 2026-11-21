@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Base un poco mayor (17 px en lugar de 16): todo el sistema, que usa rem, se ve más grande y legible */
+@layer base {
+    html {
+        font-size: 17px;
+    }
+}

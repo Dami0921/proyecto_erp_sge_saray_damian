@@ -29,8 +29,10 @@ class RolePermissionSeeder extends Seeder
             'ver-kardex', 'ajustar-kardex', 'ver-auditoria',
             // Clase 13: intercambio con Excel
             'exportar-productos', 'importar-productos', 'exportar-ventas',
+            // Cargas masivas de la Organización (carga inicial de datos de una empresa nueva)
+            'importar-clientes', 'importar-proveedores',
             // Configuración: módulos del sistema, usuarios (con roles y permisos directos) y matriz de roles
-            'gestionar-modulos', 'gestionar-usuarios', 'gestionar-roles',
+            'gestionar-modulos', 'gestionar-usuarios', 'gestionar-roles', 'gestionar-organizacion',
         ];
 
         // findOrCreate: si el permiso ya existe no lo duplica (el seeder se puede repetir)
@@ -43,14 +45,14 @@ class RolePermissionSeeder extends Seeder
 
         Role::findOrCreate('vendedor')->syncPermissions([
             'ver-productos',
-            'ver-clientes', 'crear-clientes', 'editar-clientes',
+            'ver-clientes', 'crear-clientes', 'editar-clientes', 'importar-clientes',
             'ver-ventas', 'crear-ventas',
         ]);
 
         Role::findOrCreate('almacenista')->syncPermissions([
             'ver-productos', 'crear-productos', 'editar-productos',
             'ver-categorias',
-            'ver-proveedores', 'crear-proveedores', 'editar-proveedores',
+            'ver-proveedores', 'crear-proveedores', 'editar-proveedores', 'importar-proveedores',
             'ver-lotes', 'crear-lotes', 'editar-lotes',
             'ver-compras', 'crear-compras', 'recibir-compras',
             'ver-kardex', 'ajustar-kardex',
